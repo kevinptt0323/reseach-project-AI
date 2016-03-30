@@ -11,6 +11,7 @@ using namespace std;
 int leftMap[65536];
 int rightMap[65536];
 int mirrorMap[65536];
+int SmirrorMap[65536];
 
 int pushLeft(int n) {
 	if ((n&0xf0)==0)
@@ -25,6 +26,8 @@ int pushLeft(int n) {
 void genMap() {
 	for(int i=0; i<65536; ++i)
 		mirrorMap[i] = ((i&0xf)<<12) | ((i&0xf0)<<4) | ((i&0xf00)>>4) | (i>>12);
+	for(int i=0; i<65536; ++i)
+		SmirrorMap[i] = ((i&0xf)<<4) | ((i&0xf0)>>4) | ((i&0xf00)<<4) | ((i&0xf000)>>4);
 	for(int i=65535, i2; i; --i) {
 		i2 = pushLeft(i);
 		if ( (i2&0xf000) && ((i2^(i2<<4))&0xf000) == 0)
@@ -75,28 +78,40 @@ public:
 			genCeil();
 	}
 	void up() {
-		reflex();
+		trans();
 		left();
-		reflex();
+		trans();
 	}
 	void down() {
-		reflex();
+		trans();
 		right();
-		reflex();
+		trans();
 	}
 	void mirror() {
 		for(int i=0; i<4; ++i) {
 			row[i] = mirrorMap[row[i]];
 		}
 	}
-	void reflex() {
-		int row2[4];
-		for(int i=0; i<4; ++i) row2[i] = row[i];
-		for(int i=0; i<4; ++i) {
-			row[i] = 0;
-			for(int j=0; j<4; ++j)
-				row[i] |= getCeil(row2, j, i)<<((3-j)<<2);
-		}
+	inline void swap(int r1,int r2,int pos)
+	{
+		row[r2]^=row[r1]&pos;
+		row[r1]^=row[r2]&pos;
+		row[r2]^=row[r1]&pos;
+	}
+	void trans()
+	{
+		for(int i=2; i<4; i++)
+			row[i]=mirrorMap[row[i]];
+		swap(0,3,0xff00);
+		swap(1,2,0xff00);
+		for(int i=2; i<4; i++)
+			row[i]=mirrorMap[row[i]];
+		for(int i=1; i<4; i+=2)
+			row[i]=SmirrorMap[row[i]];
+		swap(0,1,0xff0);
+		swap(2,3,0xff0);
+		for(int i=1; i<4; i+=2)
+			row[i]=SmirrorMap[row[i]];
 	}
 	void print() {
 		puts("---------------------------------");
