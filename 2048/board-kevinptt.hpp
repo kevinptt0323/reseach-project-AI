@@ -102,14 +102,14 @@ public:
 	{
 		for(int i=2; i<4; i++)
 			row[i]=mirrorMap[row[i]];
-		swap(0,3,0xff00);
-		swap(1,2,0xff00);
+		swap(0,3,0xff);
+		swap(1,2,0xff);
 		for(int i=2; i<4; i++)
 			row[i]=mirrorMap[row[i]];
 		for(int i=1; i<4; i+=2)
 			row[i]=SmirrorMap[row[i]];
 		swap(0,1,0xff0);
-		swap(2,3,0xff0);
+		swap(2,3,0xf00f);
 		for(int i=1; i<4; i+=2)
 			row[i]=SmirrorMap[row[i]];
 	}
