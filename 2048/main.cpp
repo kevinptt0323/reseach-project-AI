@@ -1,4 +1,9 @@
+#ifdef BSNIPERS
+#include "board-bsnipers.hpp"
+#endif
+#ifdef KEVINPTT
 #include "board-kevinptt.hpp"
+#endif
 #include <cstdio>
 
 int main() {
