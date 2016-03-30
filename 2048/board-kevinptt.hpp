@@ -7,6 +7,7 @@
 #include <ctime>
 #include <algorithm>
 using namespace std;
+XDD
 
 int leftMap[65536];
 int rightMap[65536];
