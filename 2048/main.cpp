@@ -1,3 +1,6 @@
+#ifdef _WIN32
+#define _hypot hypot
+#endif
 #ifdef BSNIPERS
 #include "board-bsnipers.hpp"
 #endif
@@ -13,10 +16,10 @@ int main() {
 	char str[10];
 	while( ~scanf("%s", str) ) {
 		switch(str[0]) {
-			case 'a': b.left(); break;
-			case 'd': b.right(); break;
-			case 'w': b.up(); break;
-			case 's': b.down(); break;
+			case 'a': b.left(true); break;
+			case 'd': b.right(true); break;
+			case 'w': b.up(true); break;
+			case 's': b.down(true); break;
 		}
 		b.print();
 		puts("");
