@@ -10,8 +10,8 @@ using namespace std;
 
 int leftMap[65536];
 int rightMap[65536];
-int mirrorMap[65536];
-int SmirrorMap[65536];
+int mirrorMap[65536];	// 1234 -> 4321
+int SmirrorMap[65536];	// 1234 -> 2143
 
 int pushLeft(int n) {
 	if ((n&0xf0)==0)
@@ -39,7 +39,6 @@ void genMap() {
 		i2 = pushLeft(i2);
 		leftMap[i] = i2;
 	}
-	printf("%x %x\n", leftMap[0x2200], leftMap[0x2210]);
 	for(int i=65535; i; --i)
 		rightMap[mirrorMap[i]] = mirrorMap[leftMap[i]];
 }
@@ -54,40 +53,50 @@ public:
 	}
 	void init() {
 		memset(row, 0, sizeof(row));
-		genCeil();
-		genCeil();
+		genCell();
+		genCell();
 	}
-	void left() {
+	void left(bool next=false) {
 		bool change = false;
 		for(int i=0; i<4; ++i) {
 			if (row[i] != leftMap[row[i]])
 				change = true;
 			row[i] = leftMap[row[i]];
 		}
-		if (change)
-			genCeil();
+		if (next && change)
+			genCell();
 	}
-	void right() {
+	void right(bool next=false) {
 		bool change = false;
 		for(int i=0; i<4; ++i) {
 			if (row[i] != rightMap[row[i]])
 				change = true;
 			row[i] = rightMap[row[i]];
 		}
-		if (change)
-			genCeil();
+		if (next && change)
+			genCell();
 	}
-	void up() {
+	void up(bool next=false) {
 		trans();
-		left();
-		trans();
-	}
-	void down() {
-		trans();
-		right();
+		left(next);
 		trans();
 	}
-	void mirror() {
+	void down(bool next=false) {
+		trans();
+		right(next);
+		trans();
+	}
+	void clockwise()
+	{
+		trans();
+		mirrorLR();
+	}
+	void C_clockwise()
+	{
+		mirrorLR();
+		trans();
+	}
+	inline void mirrorLR() {		//left right mirrorLR
 		for(int i=0; i<4; ++i) {
 			row[i] = mirrorMap[row[i]];
 		}
@@ -118,47 +127,75 @@ public:
 		for(int i=0; i<4; ++i) {
 			printf("|");
 			for(int j=0; j<4; ++j) {
-				int k = getCeil(row, i, j);
+				int k = getCell(i, j);
 				if (k)
 					printf(" %5d |", 1<<k);
 				else
 					printf("       |");
 			}
-			printf("\t%04x", row[i]);
 			puts("");
 		}
 		puts("---------------------------------");
 	}
-private:
 	int row[4];
 	inline int _empty() {
 		int empty = 0;
 		for(int i=0; i<16; ++i)
-			empty |= (getCeil(row, i>>2, i&0x3)==0)<<i;
+			empty |= (getCell(i>>2, i&0x3)==0)<<i;
 		return empty;
 	}
 	inline bool die() {
 		return _empty()==0;
 	}
-	inline void genCeil() {
+	inline void genCell() {
 		int empty = _empty(), ret, num;
-		printf("%x\n", empty);
 		if (empty!=0) {
 			while(1) {
 				ret = rand()&0xf;
 				num = ((rand()%10)==0)+1; // 2:4 = 9:1
 				if (empty&(1<<ret)) {
-					setCeil(row, ret>>2, ret&0x3, num);
+					setCell(row, ret>>2, ret&0x3, num);
 					return;
 				}
 			}
 		}
 	}
-	inline int getCeil(int arr[], int x, int y) {
-		return (arr[x]>>((3-y)<<2)) & 0xf;
+	bool movable()
+	{
+		board tmp=*this;
+		tmp.left();
+		if(tmp!=*this)
+			return true;
+		tmp.right();
+		if(tmp!=*this)
+			return true;
+		tmp.up();
+		if(tmp!=*this)
+			return true;
+		tmp.down();
+		if(tmp!=*this)
+			return true;
+		return false;
 	}
-	inline void setCeil(int arr[], int x, int y, int val) {
+	inline int getCell(int x, int y) {
+		return (row[x]>>((3-y)<<2)) & 0xf;
+	}
+	inline void setCell(int arr[], int x, int y, int val) {
 		arr[x] = (arr[x] & (0xffff^(0xf<<((3-y)<<2)))) | (val<<((3-y)<<2));
+	}
+	inline bool operator!=(const board& rhs) const
+	{
+		for(int i=0; i<4; i++)
+			if(row[i]!=rhs.row[i])
+				return true;
+		return false;
+	}
+	inline bool operator==(const board& rhs) const
+	{
+		for(int i=0; i<4; i++)
+			if(row[i]!=rhs.row[i])
+				return false;
+		return true;
 	}
 };
 
