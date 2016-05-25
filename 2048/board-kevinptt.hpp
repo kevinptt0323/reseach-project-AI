@@ -1,5 +1,5 @@
-#ifndef _BOARD_HPP_
-#define _BOARD_HPP_
+#ifndef _BOARD_KEVINPTT_HPP_
+#define _BOARD_KEVINPTT_HPP_
 
 #include <cstdio>
 #include <cstring>

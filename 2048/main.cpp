@@ -1,12 +1,7 @@
 #ifdef _WIN32
 #define _hypot hypot
 #endif
-#ifdef BSNIPERS
-#include "board-bsnipers.hpp"
-#endif
-#ifdef KEVINPTT
-#include "board-kevinptt.hpp"
-#endif
+#include "board.hpp"
 #include <cstdio>
 
 int main() {

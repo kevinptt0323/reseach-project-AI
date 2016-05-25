@@ -1,5 +1,5 @@
-#ifndef _BOARD_HPP_
-#define _BOARD_HPP_
+#ifndef _BOARD_BSNIPERS_HPP_
+#define _BOARD_BSNIPERS_HPP_
 
 #include <stdio.h>
 #include <stdlib.h>
