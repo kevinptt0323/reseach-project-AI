@@ -158,7 +158,7 @@ public:
 				ret = rand()&0xf;
 				num = ((rand()%10)==0)+1; // 2:4 = 9:1
 				if (empty&(1<<ret)) {
-					setCell(row, ret>>2, ret&0x3, num);
+					setCell(ret>>2, ret&0x3, num);
 					return;
 				}
 			}
@@ -184,8 +184,8 @@ public:
 	inline int getCell(int x, int y) const {
 		return (row[x]>>((3-y)<<2)) & 0xf;
 	}
-	inline void setCell(int arr[], int x, int y, int val) {
-		arr[x] = (arr[x] & (0xffff^(0xf<<((3-y)<<2)))) | (val<<((3-y)<<2));
+	inline void setCell(int x, int y, int val) {
+		row[x] = (row[x] & (0xffff^(0xf<<((3-y)<<2)))) | (val<<((3-y)<<2));
 	}
 	inline bool operator!=(const board& rhs) const
 	{
