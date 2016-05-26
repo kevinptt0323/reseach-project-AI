@@ -126,7 +126,7 @@ public:
 		for(int i=1; i<4; i+=2)
 			row[i]=SmirrorMap[row[i]];
 	}
-	void print() {
+	void print() const{
 		puts("---------------------------------");
 		for(int i=0; i<4; ++i) {
 			printf("|");
@@ -142,13 +142,13 @@ public:
 		puts("---------------------------------");
 	}
 	int row[4];
-	inline int _empty() {
+	inline int _empty() const {
 		int empty = 0;
 		for(int i=0; i<16; ++i)
 			empty |= (getCell(i>>2, i&0x3)==0)<<i;
 		return empty;
 	}
-	inline bool die() {
+	inline bool die() const {
 		return _empty()==0;
 	}
 	inline void genCell() {
@@ -164,7 +164,7 @@ public:
 			}
 		}
 	}
-	bool movable()
+	bool movable() const
 	{
 		board tmp=*this;
 		tmp.left();
@@ -181,7 +181,7 @@ public:
 			return true;
 		return false;
 	}
-	inline int getCell(int x, int y) {
+	inline int getCell(int x, int y) const {
 		return (row[x]>>((3-y)<<2)) & 0xf;
 	}
 	inline void setCell(int arr[], int x, int y, int val) {
