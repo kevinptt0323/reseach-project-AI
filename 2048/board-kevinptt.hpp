@@ -8,6 +8,8 @@
 #include <algorithm>
 using namespace std;
 
+typedef unsigned long long ull;
+
 int leftMap[65536];
 int rightMap[65536];
 int mirrorMap[65536];	// 1234 -> 4321
@@ -152,16 +154,16 @@ public:
 		return _empty()==0;
 	}
 	inline void genCell() {
-		int empty = _empty(), ret, num;
-		if (empty!=0) {
-			while(1) {
-				ret = rand()&0xf;
-				num = ((rand()%10)==0)+1; // 2:4 = 9:1
-				if (empty&(1<<ret)) {
-					setCell(ret>>2, ret&0x3, num);
-					return;
-				}
-			}
+		ull pos=0;
+		int cnt=0;
+		for(ull i=0; i<16; i++)
+			if(!getCell(i>>2,i&0x3))
+				pos|=i<<(cnt++<<2);
+		if(cnt!=0){
+			int num=(rand()%10==0)?2:1; //2:4 = 9:1
+			int tar=rand()%cnt;
+			tar=(pos>>(tar<<2))&0xf;
+			setCell(tar>>2,tar&0x3,num);
 		}
 	}
 	bool movable() const
