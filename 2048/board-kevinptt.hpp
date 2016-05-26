@@ -96,10 +96,14 @@ public:
 		mirrorLR();
 		trans();
 	}
-	inline void mirrorLR() {		//left right mirrorLR
+	inline void mirrorLR() {		//left right mirror
 		for(int i=0; i<4; ++i) {
 			row[i] = mirrorMap[row[i]];
 		}
+	}
+	inline void mirrorUD() {		//upside down mirror
+		std::swap(row[0],row[3]);
+		std::swap(row[1],row[2]);
 	}
 	inline void swap(int r1,int r2,int pos)
 	{
