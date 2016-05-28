@@ -48,3 +48,33 @@ float score(board b)
 	return ret;
 }
 
+void _updateAttr(const board &b, float val)
+{
+	for(int i=0; i<attr_n; i++){
+		int id=0;
+		for(int j=0; j<attr[i].slot_num; j++){
+			int pos=(attr[i].position>>(j<<2))&0xf;
+			id|=b.getCell(pos>>2,pos&0x3)<<(j<<2);
+		}
+		attr[i].data[id]+=val;
+	}
+}
+void updateAttr(board b, float val)
+{
+	_updateAttr(b,val);
+	b.mirrorUD();
+	_updateAttr(b,val);
+	b.mirrorLR();
+	_updateAttr(b,val);
+	b.mirrorUD();
+	_updateAttr(b,val);
+	b.trans();
+	_updateAttr(b,val);
+	b.mirrorUD();
+	_updateAttr(b,val);
+	b.mirrorLR();
+	_updateAttr(b,val);
+	b.mirrorUD();
+	_updateAttr(b,val);
+}
+
