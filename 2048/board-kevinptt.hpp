@@ -14,6 +14,8 @@ int leftMap[65536];
 int rightMap[65536];
 int mirrorMap[65536];	// 1234 -> 4321
 int SmirrorMap[65536];	// 1234 -> 2143
+int moveLeftScore[65536];
+int moveRightScore[65536];
 
 int pushLeft(int n) {
 	if ((n&0xf0)==0)
@@ -31,18 +33,28 @@ void genMap() {
 	for(int i=0; i<65536; ++i)
 		SmirrorMap[i] = ((i&0xf)<<4) | ((i&0xf0)>>4) | ((i&0xf00)<<4) | ((i&0xf000)>>4);
 	for(int i=65535, i2; i; --i) {
+		int scoreSum=0;
 		i2 = pushLeft(i);
-		if ( (i2&0xf000) && ((i2^(i2<<4))&0xf000) == 0)
+		if ( (i2&0xf000) && ((i2^(i2<<4))&0xf000) == 0){
+			scoreSum += (2<<((i2&0xf000)>>12));
 			i2 = (i2&0xf0ff) + 0x1000;
-		if ( (i2& 0xf00) && ((i2^(i2<<4))& 0xf00) == 0)
+		}
+		if ( (i2& 0xf00) && ((i2^(i2<<4))& 0xf00) == 0){
+			scoreSum += (2<<((i2&0xf00)>>8));
 			i2 = (i2&0xff0f) + 0x100;
-		if ( (i2&  0xf0) && ((i2^(i2<<4))&  0xf0) == 0)
+		}
+		if ( (i2&  0xf0) && ((i2^(i2<<4))&  0xf0) == 0){
+			scoreSum += (2<<((i2&0xf0)>>4));
 			i2 = (i2&0xfff0) + 0x10;
+		}
 		i2 = pushLeft(i2);
+		moveLeftScore[i] = scoreSum;
 		leftMap[i] = i2;
 	}
-	for(int i=65535; i; --i)
+	for(int i=65535; i; --i){
+		moveRightScore[mirrorMap[i]] = moveLeftScore[i];
 		rightMap[mirrorMap[i]] = mirrorMap[leftMap[i]];
+	}
 }
 
 class board {
@@ -58,35 +70,45 @@ public:
 		genCell();
 		genCell();
 	}
-	void left(bool next=false) {
+	int left(bool next=false) {
+		int ret=0;
 		bool change = false;
 		for(int i=0; i<4; ++i) {
 			if (row[i] != leftMap[row[i]])
 				change = true;
+			ret+=moveLeftScore[row[i]];
 			row[i] = leftMap[row[i]];
 		}
 		if (next && change)
 			genCell();
+		return ret;
 	}
-	void right(bool next=false) {
+	int right(bool next=false) {
+		int ret=0;
 		bool change = false;
 		for(int i=0; i<4; ++i) {
 			if (row[i] != rightMap[row[i]])
 				change = true;
+			ret+=moveRightScore[row[i]];
 			row[i] = rightMap[row[i]];
 		}
 		if (next && change)
 			genCell();
+		return ret;
 	}
-	void up(bool next=false) {
+	int up(bool next=false) {
+		int ret;
 		trans();
-		left(next);
+		ret=left(next);
 		trans();
+		return ret;
 	}
-	void down(bool next=false) {
+	int down(bool next=false) {
+		int ret;
 		trans();
-		right(next);
+		ret=right(next);
 		trans();
+		return ret;
 	}
 	void clockwise()
 	{
