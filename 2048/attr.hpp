@@ -11,7 +11,7 @@ struct Attr
 	int data[1<<24];
 };
 
-float _score(const board &b, Attr attr[], int attrN)
+float _getScore(const board &b, Attr attr[], int attrN)
 {
 	float ret=0;
 	for(int i=0; i<attrN; i++){
@@ -25,24 +25,24 @@ float _score(const board &b, Attr attr[], int attrN)
 	return ret;
 }
 
-float score(board b, Attr attr[], int attrN)
+float getScore(board b, Attr attr[], int attrN)
 {
 	float ret=0;
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.mirrorUD();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.mirrorLR();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.mirrorUD();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.trans();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.mirrorUD();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.mirrorLR();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	b.mirrorUD();
-	ret+=_score(b,attr,attrN);
+	ret+=_getScore(b,attr,attrN);
 	return ret;
 }
 
