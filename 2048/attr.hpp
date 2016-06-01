@@ -6,7 +6,7 @@ using namespace std;
 
 struct Attr
 {
-	int slot_num;
+	int slotNum;
 	int position;
 	int data[1<<24];
 };
@@ -16,7 +16,7 @@ float _score(const board &b, Attr attr[], int attrN)
 	float ret=0;
 	for(int i=0; i<attrN; i++){
 		int id=0;
-		for(int j=0; j<attr[i].slot_num; j++){
+		for(int j=0; j<attr[i].slotNum; j++){
 			int pos=(attr[i].position>>(j<<2))&0xf;
 			id|=b.getCell(pos>>2,pos&0x3)<<(j<<2);
 		}
@@ -50,7 +50,7 @@ void _updateAttr(const board &b, Attr attr[], int attrN, float val)
 {
 	for(int i=0; i<attrN; i++){
 		int id=0;
-		for(int j=0; j<attr[i].slot_num; j++){
+		for(int j=0; j<attr[i].slotNum; j++){
 			int pos=(attr[i].position>>(j<<2))&0xf;
 			id|=b.getCell(pos>>2,pos&0x3)<<(j<<2);
 		}
