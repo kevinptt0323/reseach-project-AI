@@ -6,7 +6,7 @@
 #define learnTimes 20000
 #define learnSpeed (0.02)
 
-typedef int (board::*move)(bool);
+typedef int (board::*MoveFunc)(bool);
 
 int attrN;
 Attr attr[10];
@@ -39,7 +39,7 @@ bool save(const char* filename, Attr attr[], int& attrN) {
 	if(!fout){
 		return false;
 	}
-	fscanf(fout,"%d",&attrN);
+	fprintf(fout,"%d\n",attrN);
 	for(int i=0; i<attrN; i++){
 		fprintf(fout,"%d\n",attr[i].slotNum);
 		fprintf(fout,"%d\n",attr[i].position);
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 	}
 	srand(time(NULL));
 	genMap();
-	move moveArr[4];
+	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
 	moveArr[2]=&board::left;
