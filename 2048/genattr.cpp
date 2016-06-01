@@ -9,7 +9,7 @@ Attr attr[10];
 
 int main()
 {
-	freopen("zerodata.txt","w",stdout);
+	freopen("zero.dat","w",stdout);
 	printf("1\n");
 	printf("6\n");
 	printf("%d\n",(0x0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x5<<20));
