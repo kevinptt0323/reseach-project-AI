@@ -60,8 +60,6 @@ void genMap() {
 class board {
 public:
 	board() {
-		srand(time(0));
-		genMap();
 	}
 	~board() {
 	}
@@ -81,7 +79,10 @@ public:
 		}
 		if (next && change)
 			genCell();
-		return ret;
+		if(!change)
+			return -1;
+		else
+			return ret;
 	}
 	int right(bool next=false) {
 		int ret=0;
@@ -94,7 +95,10 @@ public:
 		}
 		if (next && change)
 			genCell();
-		return ret;
+		if(!change)
+			return -1;
+		else
+			return ret;
 	}
 	int up(bool next=false) {
 		int ret;
