@@ -1,27 +1,52 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "board-kevinptt.hpp"
 #include "attr.hpp"
+
+#define FRWERROR(str,num) if(int(str)!=int(num)) puts("error");
 
 
 int attrN;
 Attr attr[10];
 
+
 int main()
 {
-	freopen("zero.dat","w",stdout);
-	printf("1\n");
-	printf("6\n");
-	printf("%d\n",(0x0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x5<<20));
-	for(int i=0; i<1<<24; i++){
-		printf("0.0\n");
+	char name[50];
+	int seed;
+	printf("this program will generate 10~30 random attributes with zero data.\n");
+	printf("please input the file name(string without space) and seed(int).\n");
+	scanf("%s %d",name,&seed);
+	srand(seed);
+	FILE *out=fopen(name,"wb");
+	int n;
+	n=rand()%20+10;
+	FRWERROR(fwrite(&n,sizeof(int),1,out),1)
+	printf("%d attribute\n",n);
+	for(int i=0; i<(1<<24); i++)
+		attr[0].data[i]=0;
+	for(int i=0; i<n; i++){
+		int slotNum=4;
+		int arr[10];
+		for(int j=0; j<slotNum; j++){
+			arr[j]=rand()%16;
+			for(int k=0; k<j; k++)
+				if(arr[j]==arr[k]){
+					j--;
+					break;
+				}
+		}
+		attr[0].slotNum=slotNum;
+		attr[0].position=0;
+		for(int j=0; j<slotNum; j++){
+			attr[0].position|=arr[j]<<(j<<2);
+		}
+		FRWERROR(fwrite(&attr[0].slotNum,sizeof(int),1,out),1)
+		FRWERROR(fwrite(&attr[0].position,sizeof(int),1,out),1)
+		FRWERROR(fwrite(&attr[0].data,sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
 	}
-	return 0;
-	printf("6\n");
-	printf("%d\n",(0x0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x8<<20));
-	for(int i=0; i<1<<24; i++){
-		printf("0.0\n");
-	}
+	fclose(out);
 	return 0;
 }
 
