@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "board-kevinptt.hpp"
 #include "attr.hpp"
@@ -42,6 +43,12 @@ int main()
 		for(int j=0; j<slotNum; j++){
 			attr[0].position|=arr[j]<<(j<<2);
 		}
+		board b;
+		memset(b.row,0,sizeof(b.row));
+		for(int j=0; j<slotNum; j++){
+			b.setCell(arr[j]>>2,arr[j]&0x3,1);
+		}
+		b.print();
 		FRWERROR(fwrite(&attr[0].slotNum,sizeof(int),1,out),1)
 		FRWERROR(fwrite(&attr[0].position,sizeof(int),1,out),1)
 		FRWERROR(fwrite(&attr[0].data,sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
