@@ -25,7 +25,7 @@ int main()
 	n=rand()%20+10;
 	FRWERROR(fwrite(&n,sizeof(int),1,out),1)
 	printf("%d attribute\n",n);
-	for(int i=0; i<(1<<24); i++)
+	for(int i=0; i<ATTR_DATA_SIZE; i++)
 		attr[0].data[i]=0;
 	for(int i=0; i<n; i++){
 		int slotNum=4;

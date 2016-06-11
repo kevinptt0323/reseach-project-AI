@@ -3,12 +3,13 @@
 using namespace std;
 
 #define ATTR_NUM 10
+#define ATTR_DATA_SIZE (1<<16)
 
 struct Attr
 {
 	int slotNum;
 	int position;
-	float data[1<<24];
+	float data[ATTR_DATA_SIZE];
 };
 
 float _getScore(const board &b, Attr attr[], int attrN)
