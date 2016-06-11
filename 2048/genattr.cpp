@@ -46,7 +46,7 @@ int main()
 		board b;
 		memset(b.row,0,sizeof(b.row));
 		for(int j=0; j<slotNum; j++){
-			b.setCell(arr[j]>>2,arr[j]&0x3,1);
+			b.setCell(arr[j]>>2,arr[j]&0x3,j+1);
 		}
 		b.print();
 		FRWERROR(fwrite(&attr[0].slotNum,sizeof(int),1,out),1)
