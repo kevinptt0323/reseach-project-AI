@@ -3,6 +3,9 @@
 #include "board.hpp"
 #include "attr.hpp"
 
+#include <time.h>
+
+
 #define learnTimes 20000
 #define learnSpeed (0.02)
 
@@ -19,19 +22,19 @@ struct record
 
 record rec[1000];
 
+
 bool load(const char* filename, Attr attr[], int& attrN) {
 	FILE* fin = fopen(filename, "rb");
 	if(!fin){
 		return false;
 	}
-	fscanf(fin,"%d",&attrN);
+	fread(&attrN,sizeof(int),1,fin);
 	for(int i=0; i<attrN; i++){
-		fscanf(fin,"%d",&attr[i].slotNum);
-		fscanf(fin,"%d",&attr[i].position);
-		for(int j=0; j<(1<<(attr[i].slotNum<<2)); j++){
-			fscanf(fin,"%f",&attr[i].data[j]);
-		}
+		fread(&attr[i].slotNum,sizeof(int),1,fin);
+		fread(&attr[i].position,sizeof(int),1,fin);
+		fread(&attr[i].data,sizeof(float),1<<(attr[i].slotNum<<2),fin);
 	}
+	fclose(fin);
 	return true;
 }
 bool save(const char* filename, Attr attr[], int& attrN) {
@@ -39,14 +42,13 @@ bool save(const char* filename, Attr attr[], int& attrN) {
 	if(!fout){
 		return false;
 	}
-	fprintf(fout,"%d\n",attrN);
+	fwrite(&attrN,sizeof(int),1,fout);
 	for(int i=0; i<attrN; i++){
-		fprintf(fout,"%d\n",attr[i].slotNum);
-		fprintf(fout,"%d\n",attr[i].position);
-		for(int j=0; j<(1<<(attr[i].slotNum<<2)); j++){
-			fprintf(fout,"%f\n",attr[i].data[j]);
-		}
+		fwrite(&attr[i].slotNum,sizeof(int),1,fout);
+		fwrite(&attr[i].position,sizeof(int),1,fout);
+		fwrite(&attr[i].data,sizeof(float),1<<(attr[i].slotNum<<2),fout);
 	}
+	fclose(fout);
 	return true;
 }
 
@@ -58,7 +60,6 @@ int main(int argc, char* argv[]) {
 	} else {
 		return 1;
 	}
-
 	if( !load(in, attr, attrN) ) {
 		printf("file open failed.\n");
 		return 1;
