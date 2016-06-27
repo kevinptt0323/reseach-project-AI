@@ -1,7 +1,10 @@
 CXX      = g++
 CXXFLAGS = -Wall -Wshadow -O2 -Im -std=c++11
 
-all: kevinptt
+all: kevinptt learn gen
+
+gen: genattr.cpp
+	$(CXX) $(CXXFLAGS) -DKEVINPTT $< -o $@.out
 
 learn: learn.cpp
 	$(CXX) $(CXXFLAGS) -DKEVINPTT $< -o $@.out
