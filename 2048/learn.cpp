@@ -52,6 +52,7 @@ bool save(const char* filename, Attr attr[], int& attrN) {
 	return true;
 }
 
+
 int main(int argc, char* argv[]) {
 	char in[2048], out[2048];
 	if( argc==3 ) {
@@ -81,13 +82,23 @@ int main(int argc, char* argv[]) {
 			rec[step].s1=b;
 			board newb[4];
 			int earnScore[4];
+			bool die=true;
+			int tar=-1;
+			int tmpScore;
 			for(int i=0; i<4; i++){
 				newb[i]=b;
 				earnScore[i]=(newb[i].*moveArr[i])(false);
+				if(earnScore[i]!=-1){
+					die=false;
+					if(tar==-1){
+						tar=i;
+						tmpScore=earnScore[i]+getScore(newb[i],attr,attrN);
+					}
+				}
 			}
-			int tar=-1;
-			int tmpScore=-1;
-			for(int i=0; i<4; i++){
+			if(die)
+				break;
+			for(int i=tar+1; i<4; i++){
 				if(earnScore[i]!=-1){
 					float tmp=earnScore[i]+getScore(newb[i],attr,attrN);
 					if(tmpScore<tmp){
@@ -96,15 +107,10 @@ int main(int argc, char* argv[]) {
 					}
 				}
 			}
-			if(tar==-1){
-				//printf("%d\n",step);
-				break;
-			}else{
-				score+=earnScore[tar];
-				b=newb[tar];
-				rec[step].s2=b;
-				rec[step++].earned=earnScore[tar];
-			}
+			score+=earnScore[tar];
+			b=newb[tar];
+			rec[step].s2=b;
+			rec[step++].earned=earnScore[tar];
 			if(step==1000){
 				printf("play too long\n");
 				b.print();
@@ -113,7 +119,13 @@ int main(int argc, char* argv[]) {
 			b.genCell();
 		}while(1);
 		for(int i=step-1; i>=0; i--){
-			float dif=getScore(rec[i].s2, attr, attrN)+rec[i].earned-getScore(rec[i].s1, attr, attrN);
+		//for(int i=0; i<step; i++){
+			
+			float s1=getScore(rec[i].s2, attr, attrN);
+			float s2=getScore(rec[i].s1, attr, attrN);
+			if(i==step-1)
+				s2=-100;
+			float dif=s2+rec[i].earned-s1;
 			updateAttr(rec[i].s1, attr, attrN, dif*learnSpeed);
 		}
 		acc+=score;
