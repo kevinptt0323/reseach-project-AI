@@ -7,9 +7,15 @@
 
 #define FRWERROR(str,num) if(int(str)!=int(num)) puts("error");
 
+#define NORAND 0
 
 int attrN;
 Attr attr[10];
+
+unsigned long long ini[30]={(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12),
+							(0x1<<0)|(0x2<<4)|(0x4<<8)|(0x5<<12),
+							(0x2<<0)|(0x4<<4)|(0x5<<8)|(0x6<<12)
+							};
 
 
 int main()
@@ -22,7 +28,11 @@ int main()
 	srand(seed);
 	FILE *out=fopen(name,"wb");
 	int n;
+#if NORAND
+	n=3;
+#else
 	n=rand()%20+10;
+#endif
 	FRWERROR(fwrite(&n,sizeof(int),1,out),1)
 	printf("%d attribute\n",n);
 	for(int i=0; i<ATTR_DATA_SIZE; i++)
@@ -30,6 +40,13 @@ int main()
 	for(int i=0; i<n; i++){
 		int slotNum=4;
 		int arr[10];
+#if NORAND
+		attr[0].slotNum=slotNum;
+		attr[0].position=ini[i];
+		for(int j=0; j<slotNum; j++){
+			arr[j]=(ini[i]>>(j<<2))&0xf;
+		}
+#else
 		for(int j=0; j<slotNum; j++){
 			arr[j]=rand()%16;
 			for(int k=0; k<j; k++)
@@ -43,6 +60,7 @@ int main()
 		for(int j=0; j<slotNum; j++){
 			attr[0].position|=arr[j]<<(j<<2);
 		}
+#endif
 		board b;
 		memset(b.row,0,sizeof(b.row));
 		for(int j=0; j<slotNum; j++){
