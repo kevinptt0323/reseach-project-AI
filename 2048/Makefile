@@ -1,7 +1,7 @@
 CXX      = g++
 CXXFLAGS = -Wall -Wshadow -O2 -Im -std=c++11
 
-all: kevinptt bsnipers
+all: kevinptt
 
 kevinptt: main.cpp board.hpp board-kevinptt.hpp
 	$(CXX) $(CXXFLAGS) -DKEVINPTT $< -o $@
