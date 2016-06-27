@@ -6,6 +6,7 @@
 #include <cstdio>
 
 int main() {
+	genMap();
 	board b;
 	b.init();
 	b.print();

@@ -59,10 +59,11 @@ int main(int argc, char* argv[]) {
 		strcpy(in, argv[1]);
 		strcpy(out, argv[2]);
 	} else {
+		fprintf(stderr, "error: %s <input> <output>\n", argv[0]);
 		return 1;
 	}
 	if( !load(in, attr, attrN) ) {
-		printf("file open failed.\n");
+		fprintf(stderr, "file open failed.\n");
 		return 1;
 	}
 	srand(time(NULL));
