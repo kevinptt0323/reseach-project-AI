@@ -20,7 +20,7 @@ struct record
 	int earned;
 };
 
-record rec[1000];
+record rec[20000];
 
 
 bool load(const char* filename, Attr attr[], int& attrN) {
@@ -78,9 +78,8 @@ int main(int argc, char* argv[]) {
 		board b;
 		b.init();
 		int score=0;
-		int step=0;
+		int step=1;
 		do{
-			rec[step].s1=b;
 			board newb[4];
 			int earnScore[4];
 			bool die=true;
@@ -110,21 +109,15 @@ int main(int argc, char* argv[]) {
 			}
 			score+=earnScore[tar];
 			b=newb[tar];
-			rec[step].s2=b;
-			rec[step++].earned=earnScore[tar];
-			if(step==1000){
-				printf("play too long\n");
-				b.print();
-				break;
-			}
+			rec[step-1].s2=b;
+			rec[step-1].earned=earnScore[tar];
+			rec[step++].s1=b;
 			b.genCell();
 		}while(1);
-		for(int i=step-1; i>=0; i--){
-		//for(int i=0; i<step; i++){
-			
-			float s1=getScore(rec[i].s2, attr, attrN);
-			float s2=getScore(rec[i].s1, attr, attrN);
-			if(i==step-1)
+		for(int i=step-2; i>0; i--){
+			float s1=getScore(rec[i].s1, attr, attrN);
+			float s2=getScore(rec[i].s2, attr, attrN);
+			if(i==step-2)
 				s2=-100;
 			float dif=s2+rec[i].earned-s1;
 			updateAttr(rec[i].s1, attr, attrN, dif*learnSpeed);
