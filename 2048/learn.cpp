@@ -3,11 +3,16 @@
 #include "board.hpp"
 #include "attr.hpp"
 
+#include <vector>
+
 #include <time.h>
 
 
 #define learnTimes 20000
 #define learnSpeed (0.02)
+
+using namespace std;
+
 
 typedef int (board::*MoveFunc)(bool);
 
@@ -20,8 +25,7 @@ struct record
 	int earned;
 };
 
-record rec[20000];
-
+vector<record> rec;
 
 bool load(const char* filename, Attr attr[], int& attrN) {
 	FILE* fin = fopen(filename, "rb");
@@ -73,6 +77,7 @@ int main(int argc, char* argv[]) {
 	moveArr[1]=&board::down;
 	moveArr[2]=&board::left;
 	moveArr[3]=&board::right;
+	rec=vector<record>(1000);
 	float acc=0;
 	for(int T=0; T<learnTimes; T++){
 		board b;
@@ -112,6 +117,9 @@ int main(int argc, char* argv[]) {
 			rec[step-1].s2=b;
 			rec[step-1].earned=earnScore[tar];
 			rec[step++].s1=b;
+			if(step==rec.size()){
+				rec.resize(rec.size()<<1);
+			}
 			b.genCell();
 		}while(1);
 		for(int i=step-2; i>0; i--){
