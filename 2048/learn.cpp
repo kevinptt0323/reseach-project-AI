@@ -8,16 +8,14 @@
 #include <time.h>
 
 
-#define learnTimes 20000
-#define learnSpeed (0.02)
+#define learnTimes 10000
+#define learnSpeed (0.01)
 
 using namespace std;
 
 
 typedef int (board::*MoveFunc)(bool);
 
-int attrN;
-Attr attr[10];
 
 struct record
 {
@@ -27,12 +25,13 @@ struct record
 
 vector<record> rec;
 
-bool load(const char* filename, Attr attr[], int& attrN) {
+bool load(const char* filename, Attr *(&attr), int& attrN) {
 	FILE* fin = fopen(filename, "rb");
 	if(!fin){
 		return false;
 	}
 	fread(&attrN,sizeof(int),1,fin);
+	attr=new Attr[attrN];
 	for(int i=0; i<attrN; i++){
 		fread(&attr[i].slotNum,sizeof(int),1,fin);
 		fread(&attr[i].position,sizeof(int),1,fin);
@@ -41,7 +40,7 @@ bool load(const char* filename, Attr attr[], int& attrN) {
 	fclose(fin);
 	return true;
 }
-bool save(const char* filename, Attr attr[], int& attrN) {
+bool save(const char* filename, Attr *(&attr), int& attrN) {
 	FILE* fout = fopen(filename, "wb");
 	if(!fout){
 		return false;
@@ -53,11 +52,14 @@ bool save(const char* filename, Attr attr[], int& attrN) {
 		fwrite(&attr[i].data,sizeof(float),1<<(attr[i].slotNum<<2),fout);
 	}
 	fclose(fout);
+	delete[] attr;
 	return true;
 }
 
 
 int main(int argc, char* argv[]) {
+	int attrN;
+	Attr *attr;
 	char in[2048], out[2048];
 	if( argc==3 ) {
 		strcpy(in, argv[1]);
@@ -79,6 +81,8 @@ int main(int argc, char* argv[]) {
 	moveArr[3]=&board::right;
 	rec=vector<record>(1000);
 	float acc=0;
+	int maxscore=0,maxstep=0;
+	int goal=0;
 	for(int T=0; T<learnTimes; T++){
 		board b;
 		b.init();
@@ -117,7 +121,7 @@ int main(int argc, char* argv[]) {
 			rec[step-1].s2=b;
 			rec[step-1].earned=earnScore[tar];
 			rec[step++].s1=b;
-			if(step==rec.size()){
+			if(step==int(rec.size())){
 				rec.resize(rec.size()<<1);
 			}
 			b.genCell();
@@ -131,8 +135,21 @@ int main(int argc, char* argv[]) {
 			updateAttr(rec[i].s1, attr, attrN, dif*learnSpeed);
 		}
 		acc+=score;
+		if(maxstep<step)
+			maxstep=step;
+		if(maxscore<score)
+			maxscore=score;
+		for(int i=0; i<16; i++){
+			if(rec[step-2].s2.getCell(i>>2,i&3)>9){
+				goal++;
+				break;
+			}
+		}
 		if(T%100==99){
-			printf("times: %d\tscore: %f\n",T,acc/100);
+			printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
+			goal=0;
+			maxstep=0;
+			maxscore=0;
 			acc=0;
 		}
 	}
