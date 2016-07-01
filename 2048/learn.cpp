@@ -7,12 +7,10 @@
 
 #include <time.h>
 
-
-#define learnTimes 10000
-#define learnSpeed (0.01)
-
 using namespace std;
 
+int learnTimes = 10000;
+double learnSpeed = 0.01;
 
 typedef int (board::*MoveFunc)(bool);
 
@@ -61,11 +59,15 @@ int main(int argc, char* argv[]) {
 	int attrN;
 	Attr *attr;
 	char in[2048], out[2048];
-	if( argc==3 ) {
+	if( argc>=3 ) {
 		strcpy(in, argv[1]);
 		strcpy(out, argv[2]);
+		if( argc>=4 )
+			learnTimes = atoi(argv[3]);
+		if( argc>=5 )
+			learnSpeed = atof(argv[4]);
 	} else {
-		fprintf(stderr, "error: %s <input> <output>\n", argv[0]);
+		fprintf(stderr, "error: %s <input> <output> <learnTimes> <learnSpeed>\n", argv[0]);
 		return 1;
 	}
 	if( !load(in, attr, attrN) ) {
