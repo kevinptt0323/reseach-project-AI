@@ -57,7 +57,9 @@ int main()
 		FRWERROR(fwrite(&n,sizeof(int),1,out),1)
 		for(int i=0; i<SETSIZE; i++){
 			if(!(T&(1<<i))) continue;
-			int slotNum=4;
+			int slotNum=0;
+			for(int j=0; j<3 || (ini[i]>>(j<<2)); j++)
+				slotNum++;
 			int arr[10];
 			attr[0].slotNum=slotNum;
 			attr[0].position=ini[i];

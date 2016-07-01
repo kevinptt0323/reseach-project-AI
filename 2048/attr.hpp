@@ -2,8 +2,7 @@
 
 using namespace std;
 
-#define ATTR_NUM 10
-#define ATTR_DATA_SIZE (1<<16)
+#define ATTR_DATA_SIZE (1<<24)
 
 struct Attr
 {
