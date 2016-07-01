@@ -7,6 +7,8 @@
 
 #define FRWERROR(str,num) if(int(str)!=int(num)) puts("error");
 
+#define GENSET 1
+#define SETSIZE 5
 #define NORAND 0
 
 int attrN;
@@ -14,7 +16,9 @@ Attr attr[10];
 
 unsigned long long ini[30]={(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12),
 							(0x1<<0)|(0x2<<4)|(0x4<<8)|(0x5<<12),
-							(0x2<<0)|(0x4<<4)|(0x5<<8)|(0x6<<12)
+							(0x2<<0)|(0x4<<4)|(0x5<<8)|(0x6<<12),
+							(0x2<<0)|(0x3<<4)|(0x4<<8)|(0x5<<12),
+							(0x0<<0)|(0x1<<4)|(0x3<<8)|(0x7<<12)
 							};
 
 
@@ -26,13 +30,55 @@ int main()
 	printf("please input the file name(string without space) and seed(int).\n");
 	scanf("%s %d",name,&seed);
 	srand(seed);
+#if GENSET
+	FILE *out;
+#else
 	FILE *out=fopen(name,"wb");
+#endif
 	int n;
-#if NORAND
+#if GENSET
+	n=SETSIZE;//meaningless
+#elif NORAND
 	n=3;
 #else
 	n=rand()%20+10;
 #endif
+
+#if GENSET
+	for(int i=0; i<ATTR_DATA_SIZE; i++)
+		attr[0].data[i]=0;
+	for(int T=1; T<1<<SETSIZE; T++){
+		sprintf(name,"zero%d.dat",T);
+		out=fopen(name,"wb");
+		n=0;
+		for(int i=0; i<SETSIZE; i++)
+			if(T&(1<<i))
+				n++;
+		FRWERROR(fwrite(&n,sizeof(int),1,out),1)
+		for(int i=0; i<SETSIZE; i++){
+			if(!(T&(1<<i))) continue;
+			int slotNum=4;
+			int arr[10];
+			attr[0].slotNum=slotNum;
+			attr[0].position=ini[i];
+			/*
+			for(int j=0; j<slotNum; j++){
+				arr[j]=(ini[i]>>(j<<2))&0xf;
+			}
+			board b;
+			memset(b.row,0,sizeof(b.row));
+			for(int j=0; j<slotNum; j++){
+				b.setCell(arr[j]>>2,arr[j]&0x3,j+1);
+			}
+			b.print();
+			*/
+			FRWERROR(fwrite(&attr[0].slotNum,sizeof(int),1,out),1)
+			FRWERROR(fwrite(&attr[0].position,sizeof(int),1,out),1)
+			FRWERROR(fwrite(&attr[0].data,sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
+		}
+		fclose(out);
+	}
+#else
 	FRWERROR(fwrite(&n,sizeof(int),1,out),1)
 	printf("%d attribute\n",n);
 	for(int i=0; i<ATTR_DATA_SIZE; i++)
@@ -72,6 +118,7 @@ int main()
 		FRWERROR(fwrite(&attr[0].data,sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
 	}
 	fclose(out);
+#endif
 	return 0;
 }
 
