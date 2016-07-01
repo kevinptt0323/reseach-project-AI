@@ -16,5 +16,5 @@ bsnipers: main.cpp board.hpp board-bsnipers.hpp
 	$(CXX) $(CXXFLAGS) -DBSNIPERS $< -o $@.out
 
 clean:
-	$(RM) -f *.out
+	$(RM) *.out
 
