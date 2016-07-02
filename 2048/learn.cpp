@@ -9,8 +9,6 @@
 
 using namespace std;
 
-int learnTimes = 10000;
-double learnSpeed = 0.01;
 
 typedef int (board::*MoveFunc)(bool);
 
@@ -56,28 +54,7 @@ bool save(const char* filename, Attr *(&attr), int& attrN) {
 	return true;
 }
 
-
-int main(int argc, char* argv[]) {
-	genMap();
-	int attrN;
-	Attr *attr;
-	char in[2048], out[2048];
-	if( argc>=3 ) {
-		strcpy(in, argv[1]);
-		strcpy(out, argv[2]);
-		if( argc>=4 )
-			learnTimes = atoi(argv[3]);
-		if( argc>=5 )
-			learnSpeed = atof(argv[4]);
-	} else {
-		fprintf(stderr, "error: %s <input> <output> <learnTimes> <learnSpeed>\n", argv[0]);
-		return 1;
-	}
-	if( !load(in, attr, attrN) ) {
-		fprintf(stderr, "file open failed.\n");
-		return 1;
-	}
-	srand(time(NULL));
+void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
@@ -157,6 +134,32 @@ int main(int argc, char* argv[]) {
 			acc=0;
 		}
 	}
+}
+
+int main(int argc, char* argv[]) {
+	genMap();
+	int attrN;
+	Attr *attr;
+	int learnTimes = 10000;
+	double learnSpeed = 0.01;
+	char in[2048], out[2048];
+	if( argc>=3 ) {
+		strcpy(in, argv[1]);
+		strcpy(out, argv[2]);
+		if( argc>=4 )
+			learnTimes = atoi(argv[3]);
+		if( argc>=5 )
+			learnSpeed = atof(argv[4]);
+	} else {
+		fprintf(stderr, "error: %s <input> <output> <learnTimes> <learnSpeed>\n", argv[0]);
+		return 1;
+	}
+	if( !load(in, attr, attrN) ) {
+		fprintf(stderr, "file open failed.\n");
+		return 1;
+	}
+	srand(time(NULL));
+	learn(attr, attrN, learnTimes, learnSpeed);
 	if( !save(out, attr, attrN) ) {
 		printf("file open failed.\n");
 		return 1;
