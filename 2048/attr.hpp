@@ -8,7 +8,7 @@ struct Attr
 {
 	int slotNum;
 	int position;
-	float data[ATTR_DATA_SIZE];
+	float *data;	//ATTR_DATA_SIZE
 };
 
 float _getScore(const board &b, Attr attr[], int attrN)

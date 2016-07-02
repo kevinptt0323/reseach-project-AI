@@ -33,7 +33,8 @@ bool load(const char* filename, Attr *(&attr), int& attrN) {
 	for(int i=0; i<attrN; i++){
 		fread(&attr[i].slotNum,sizeof(int),1,fin);
 		fread(&attr[i].position,sizeof(int),1,fin);
-		fread(&attr[i].data,sizeof(float),1<<(attr[i].slotNum<<2),fin);
+		attr[i].data=new float[1<<(attr[i].slotNum<<2)];
+		fread(&(*attr[i].data),sizeof(float),1<<(attr[i].slotNum<<2),fin);
 	}
 	fclose(fin);
 	return true;
@@ -47,7 +48,8 @@ bool save(const char* filename, Attr *(&attr), int& attrN) {
 	for(int i=0; i<attrN; i++){
 		fwrite(&attr[i].slotNum,sizeof(int),1,fout);
 		fwrite(&attr[i].position,sizeof(int),1,fout);
-		fwrite(&attr[i].data,sizeof(float),1<<(attr[i].slotNum<<2),fout);
+		fwrite(&(*attr[i].data),sizeof(float),1<<(attr[i].slotNum<<2),fout);
+		delete[] attr[i].data;
 	}
 	fclose(fout);
 	delete[] attr;
@@ -56,6 +58,7 @@ bool save(const char* filename, Attr *(&attr), int& attrN) {
 
 
 int main(int argc, char* argv[]) {
+	genMap();
 	int attrN;
 	Attr *attr;
 	char in[2048], out[2048];
@@ -75,7 +78,6 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	srand(time(NULL));
-	genMap();
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
