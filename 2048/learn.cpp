@@ -56,6 +56,16 @@ bool save(const char* filename, vector<Attr> &attr) {
 	return true;
 }
 
+void deepCopy(vector<Attr> &dst, vector<Attr> &src) {
+	dst.clear();
+	dst.resize(src.size());
+	for(int i=0; i<(int)src.size(); i++){
+		dst[i].slotNum=src[i].slotNum;
+		dst[i].position=src[i].position;
+		dst[i].data=new float[1<<(src[i].slotNum<<2)];
+		memcpy(dst[i].data,src[i].data,sizeof(float)*(1<<(src[i].slotNum<<2)));
+	}
+}
 
 int test(vector<Attr> &attr){
 	MoveFunc moveArr[4];
