@@ -54,6 +54,70 @@ bool save(const char* filename, Attr *(&attr), int& attrN) {
 	return true;
 }
 
+
+int test(Attr *attr, int attrN){
+	MoveFunc moveArr[4];
+	moveArr[0]=&board::up;
+	moveArr[1]=&board::down;
+	moveArr[2]=&board::left;
+	moveArr[3]=&board::right;
+	float acc=0;
+	int maxscore=0,maxstep=0;
+	int goal=0;
+	for(int T=0; T<learnTimes; T++){
+		board b;
+		b.init();
+		int score=0;
+		int step=1;
+		do{
+			board newb[4];
+			int earnScore[4];
+			bool die=true;
+			int tar=-1;
+			int tmpScore;
+			for(int i=0; i<4; i++){
+				newb[i]=b;
+				earnScore[i]=(newb[i].*moveArr[i])(false);
+				if(earnScore[i]!=-1){
+					die=false;
+					if(tar==-1){
+						tar=i;
+						tmpScore=earnScore[i]+getScore(newb[i],attr,attrN);
+					}
+				}
+			}
+			if(die)
+				break;
+			for(int i=tar+1; i<4; i++){
+				if(earnScore[i]!=-1){
+					float tmp=earnScore[i]+getScore(newb[i],attr,attrN);
+					if(tmpScore<tmp){
+						tar=i;
+						tmpScore=tmp;
+					}
+				}
+			}
+			score+=earnScore[tar];
+			b=newb[tar];
+			b.genCell();
+		}while(1);
+		acc+=score;
+		if(maxstep<step)
+			maxstep=step;
+		if(maxscore<score)
+			maxscore=score;
+		for(int i=0; i<16; i++){
+			if(rec[step-2].s2.getCell(i>>2,i&3)>9){
+				goal++;
+				break;
+			}
+		}
+		//printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
+	}
+	return goal;
+}
+
+
 void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
