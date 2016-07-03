@@ -80,4 +80,4 @@ void updateAttr(board b, Attr attr[], int attrN, float val)
 	_updateAttr(b,attr,attrN,val);
 }
 
-#endif _ATTR_HPP_
+#endif

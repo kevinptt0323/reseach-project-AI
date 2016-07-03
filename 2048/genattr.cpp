@@ -60,7 +60,7 @@ int main()
 			int slotNum=0;
 			for(int j=0; j<3 || (ini[i]>>(j<<2)); j++)
 				slotNum++;
-			int arr[10];
+			//int arr[10];
 			attr[0].slotNum=slotNum;
 			attr[0].position=ini[i];
 			/*
