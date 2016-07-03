@@ -1,3 +1,7 @@
+#ifndef _ATTR_HPP_
+#define _ATTR_HPP_
+
+
 #include "board-kevinptt.hpp"
 
 using namespace std;
@@ -76,3 +80,4 @@ void updateAttr(board b, Attr attr[], int attrN, float val)
 	_updateAttr(b,attr,attrN,val);
 }
 
+#endif _ATTR_HPP_
