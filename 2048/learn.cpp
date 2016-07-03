@@ -21,13 +21,14 @@ struct record
 
 vector<record> rec;
 
-bool load(const char* filename, Attr *(&attr), int& attrN) {
+bool load(const char* filename, vector<Attr> &attr) {
 	FILE* fin = fopen(filename, "rb");
 	if(!fin){
 		return false;
 	}
+	int attrN;
 	fread(&attrN,sizeof(int),1,fin);
-	attr=new Attr[attrN];
+	attr.resize(attrN);
 	for(int i=0; i<attrN; i++){
 		fread(&attr[i].slotNum,sizeof(int),1,fin);
 		fread(&attr[i].position,sizeof(int),1,fin);
@@ -37,11 +38,12 @@ bool load(const char* filename, Attr *(&attr), int& attrN) {
 	fclose(fin);
 	return true;
 }
-bool save(const char* filename, Attr *(&attr), int& attrN) {
+bool save(const char* filename, vector<Attr> &attr) {
 	FILE* fout = fopen(filename, "wb");
 	if(!fout){
 		return false;
 	}
+	int attrN=attr.size();
 	fwrite(&attrN,sizeof(int),1,fout);
 	for(int i=0; i<attrN; i++){
 		fwrite(&attr[i].slotNum,sizeof(int),1,fout);
@@ -50,12 +52,12 @@ bool save(const char* filename, Attr *(&attr), int& attrN) {
 		delete[] attr[i].data;
 	}
 	fclose(fout);
-	delete[] attr;
+	attr.clear();
 	return true;
 }
 
 
-int test(Attr *attr, int attrN){
+int test(vector<Attr> &attr){
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
@@ -64,7 +66,7 @@ int test(Attr *attr, int attrN){
 	float acc=0;
 	int maxscore=0,maxstep=0;
 	int goal=0;
-	for(int T=0; T<learnTimes; T++){
+	for(int T=0; T<100; T++){
 		board b;
 		b.init();
 		int score=0;
@@ -82,7 +84,7 @@ int test(Attr *attr, int attrN){
 					die=false;
 					if(tar==-1){
 						tar=i;
-						tmpScore=earnScore[i]+getScore(newb[i],attr,attrN);
+						tmpScore=earnScore[i]+getScore(newb[i],attr);
 					}
 				}
 			}
@@ -90,7 +92,7 @@ int test(Attr *attr, int attrN){
 				break;
 			for(int i=tar+1; i<4; i++){
 				if(earnScore[i]!=-1){
-					float tmp=earnScore[i]+getScore(newb[i],attr,attrN);
+					float tmp=earnScore[i]+getScore(newb[i],attr);
 					if(tmpScore<tmp){
 						tar=i;
 						tmpScore=tmp;
@@ -118,7 +120,7 @@ int test(Attr *attr, int attrN){
 }
 
 
-void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
+void learn(vector<Attr> &attr, int learnTimes, double learnSpeed){
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
@@ -146,7 +148,7 @@ void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
 					die=false;
 					if(tar==-1){
 						tar=i;
-						tmpScore=earnScore[i]+getScore(newb[i],attr,attrN);
+						tmpScore=earnScore[i]+getScore(newb[i],attr);
 					}
 				}
 			}
@@ -154,7 +156,7 @@ void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
 				break;
 			for(int i=tar+1; i<4; i++){
 				if(earnScore[i]!=-1){
-					float tmp=earnScore[i]+getScore(newb[i],attr,attrN);
+					float tmp=earnScore[i]+getScore(newb[i],attr);
 					if(tmpScore<tmp){
 						tar=i;
 						tmpScore=tmp;
@@ -172,12 +174,12 @@ void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
 			b.genCell();
 		}while(1);
 		for(int i=step-2; i>0; i--){
-			float s1=getScore(rec[i].s1, attr, attrN);
-			float s2=getScore(rec[i].s2, attr, attrN);
+			float s1=getScore(rec[i].s1, attr);
+			float s2=getScore(rec[i].s2, attr);
 			if(i==step-2)
 				s2=-100;
 			float dif=s2+rec[i].earned-s1;
-			updateAttr(rec[i].s1, attr, attrN, dif*learnSpeed);
+			updateAttr(rec[i].s1, attr, dif*learnSpeed);
 		}
 		acc+=score;
 		if(maxstep<step)
@@ -202,8 +204,7 @@ void learn(Attr *attr, int attrN, int learnTimes, double learnSpeed){
 
 int main(int argc, char* argv[]) {
 	genMap();
-	int attrN;
-	Attr *attr;
+	vector<Attr> attr;
 	int learnTimes = 10000;
 	double learnSpeed = 0.01;
 	char in[2048], out[2048];
@@ -218,13 +219,13 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "error: %s <input> <output> <learnTimes> <learnSpeed>\n", argv[0]);
 		return 1;
 	}
-	if( !load(in, attr, attrN) ) {
+	if( !load(in, attr) ) {
 		fprintf(stderr, "file open failed.\n");
 		return 1;
 	}
 	srand(time(NULL));
-	learn(attr, attrN, learnTimes, learnSpeed);
-	if( !save(out, attr, attrN) ) {
+	learn(attr, learnTimes, learnSpeed);
+	if( !save(out, attr) ) {
 		printf("file open failed.\n");
 		return 1;
 	}
