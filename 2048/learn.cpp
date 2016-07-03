@@ -67,7 +67,7 @@ void deepCopy(vector<Attr> &dst, vector<Attr> &src) {
 	}
 }
 
-int test(vector<Attr> &attr){
+int test(vector<Attr> &attr,int times){
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
@@ -76,7 +76,7 @@ int test(vector<Attr> &attr){
 	float acc=0;
 	int maxscore=0,maxstep=0;
 	int goal=0;
-	for(int T=0; T<100; T++){
+	for(int T=0; T<times; T++){
 		board b;
 		b.init();
 		int score=0;
@@ -119,7 +119,7 @@ int test(vector<Attr> &attr){
 		if(maxscore<score)
 			maxscore=score;
 		for(int i=0; i<16; i++){
-			if(rec[step-2].s2.getCell(i>>2,i&3)>9){
+			if(b.getCell(i>>2,i&3)>9){
 				goal++;
 				break;
 			}
