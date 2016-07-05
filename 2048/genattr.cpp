@@ -8,7 +8,7 @@
 #define FRWERROR(str,num) if(int(str)!=int(num)) puts("error");
 
 #define GENSET 1
-#define SETSIZE 5
+#define SETSIZE 3
 #define NORAND 0
 
 int attrN;
@@ -44,9 +44,10 @@ int main()
 	n=rand()%20+10;
 #endif
 
-#if GENSET
+	attr[0].data=new float[ATTR_DATA_SIZE];
 	for(int i=0; i<ATTR_DATA_SIZE; i++)
 		attr[0].data[i]=0;
+#if GENSET
 	for(int T=1; T<1<<SETSIZE; T++){
 		sprintf(name,"zero%d.dat",T);
 		out=fopen(name,"wb");
@@ -83,8 +84,6 @@ int main()
 #else
 	FRWERROR(fwrite(&n,sizeof(int),1,out),1)
 	printf("%d attribute\n",n);
-	for(int i=0; i<ATTR_DATA_SIZE; i++)
-		attr[0].data[i]=0;
 	for(int i=0; i<n; i++){
 		int slotNum=4;
 		int arr[10];
