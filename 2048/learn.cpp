@@ -260,17 +260,38 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	srand(time(NULL));
-	//for(int gen=0; gen<5; gen++){	//generation
+	int ID;
+	if(sscanf(in,"zero%d.dat",&ID)!=1){
 		if( !load(in, attr) ) {
 			fprintf(stderr, "file open failed.\n");
 			return 1;
 		}
-		learn3(attr, learnTimes, learnSpeed);
+		learn(attr, learnTimes, learnSpeed);
 		if( !save(out, attr) ) {
 			printf("file open failed.\n");
 			return 1;
 		}
-	//}
+	}else{
+		if( !load(in, attr) ) {
+			fprintf(stderr, "file open failed.\n");
+			return 1;
+		}
+		sprintf(out,"LR%d-1-%d-%5.3f.dat",ID,learnTimes/1000,learnSpeed);
+		for(int gen=0; gen<5; gen++){	//generation
+			if( gen!=0 )
+				if( !load(in, attr) ) {
+					fprintf(stderr, "file open failed.\n");
+					return 1;
+				}
+			learn3(attr, learnTimes, learnSpeed);
+			if( !save(out, attr) ) {
+				printf("file open failed.\n");
+				return 1;
+			}
+			strcpy(in,out);
+			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen+2,learnTimes/1000,learnSpeed);
+		}
+	}
 	return 0;
 
 }
