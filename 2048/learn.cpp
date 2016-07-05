@@ -67,13 +67,21 @@ void deepCopy(vector<Attr> &dst, vector<Attr> &src) {
 	}
 }
 
-int test(vector<Attr> &attr,int times){
+void attrDestroy(vector<Attr> &attr) {
+	for(int i=0; i<(int)attr.size(); i++){
+		delete[] attr[i].data;
+	}
+	attr.clear();
+}
+
+
+double test(vector<Attr> &attr,int times){
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
 	moveArr[1]=&board::down;
 	moveArr[2]=&board::left;
 	moveArr[3]=&board::right;
-	float acc=0;
+	double acc=0;
 	int maxscore=0,maxstep=0;
 	int goal=0;
 	for(int T=0; T<times; T++){
@@ -124,9 +132,8 @@ int test(vector<Attr> &attr,int times){
 				break;
 			}
 		}
-		//printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
 	}
-	return goal;
+	return acc/times;
 }
 
 
@@ -212,6 +219,29 @@ void learn(vector<Attr> &attr, int learnTimes, double learnSpeed){
 	}
 }
 
+const int learnBranch=3;
+
+void learn3(vector<Attr> &attr, int learnTimes, double learnSpeed) {
+	vector<Attr> arr[learnBranch];
+	for(int i=0; i<learnBranch; i++){
+		deepCopy(arr[i],attr);
+		learn(arr[i],learnTimes,learnSpeed);
+	}
+	attrDestroy(attr);
+	int tar=0;
+	double mmax=0;
+	for(int i=0; i<learnBranch; i++){
+		double tmp=test(arr[i],200);
+		if(mmax<tmp){
+			tar=i, mmax=tmp;
+		}
+	}
+	deepCopy(attr,arr[tar]);
+	for(int i=0; i<learnBranch; i++){
+		attrDestroy(arr[i]);
+	}
+}
+
 int main(int argc, char* argv[]) {
 	genMap();
 	vector<Attr> attr;
@@ -229,16 +259,18 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr, "error: %s <input> <output> <learnTimes> <learnSpeed>\n", argv[0]);
 		return 1;
 	}
-	if( !load(in, attr) ) {
-		fprintf(stderr, "file open failed.\n");
-		return 1;
-	}
 	srand(time(NULL));
-	learn(attr, learnTimes, learnSpeed);
-	if( !save(out, attr) ) {
-		printf("file open failed.\n");
-		return 1;
-	}
+	//for(int gen=0; gen<5; gen++){	//generation
+		if( !load(in, attr) ) {
+			fprintf(stderr, "file open failed.\n");
+			return 1;
+		}
+		learn3(attr, learnTimes, learnSpeed);
+		if( !save(out, attr) ) {
+			printf("file open failed.\n");
+			return 1;
+		}
+	//}
 	return 0;
 
 }
