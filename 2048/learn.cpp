@@ -276,20 +276,19 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "file open failed.\n");
 			return 1;
 		}
-		sprintf(out,"LR%d-1-%d-%5.3f.dat",ID,learnTimes/1000,learnSpeed);
-		for(int gen=0; gen<5; gen++){	//generation
-			if( gen!=0 )
+		for(int gen=1; gen<=5; gen++){	//generation
+			if( gen!=1 )
 				if( !load(in, attr) ) {
 					fprintf(stderr, "file open failed.\n");
 					return 1;
 				}
+			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen,learnTimes/1000,learnSpeed);
 			learn3(attr, learnTimes, learnSpeed);
 			if( !save(out, attr) ) {
 				printf("file open failed.\n");
 				return 1;
 			}
 			strcpy(in,out);
-			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen+2,learnTimes/1000,learnSpeed);
 		}
 	}
 	return 0;
