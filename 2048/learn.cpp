@@ -140,14 +140,16 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 			}
 		}
 		acc+=score;
-		if(maxstep<step)
-			maxstep=step;
 		if(maxscore<score)
 			maxscore=score;
-		for(int i=0; i<16; i++){
-			if(rec[step-2].s2.getCell(i>>2,i&3)>9){
-				goal++;
-				break;
+		if( learn ) {
+			if(maxstep<step)
+				maxstep=step;
+			for(int i=0; i<16; i++){
+				if(rec[step-2].s2.getCell(i>>2,i&3)>9){
+					goal++;
+					break;
+				}
 			}
 		}
 		if( learn && T%100 == 99 ){
