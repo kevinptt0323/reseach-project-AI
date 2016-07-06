@@ -5,6 +5,14 @@
 #include "board.hpp"
 #include "attr.hpp"
 #include <cstdio>
+#include <cstdlib>
+#include <ctime>
+
+#include <vector>
+
+using namespace std;
+
+typedef int (board::*MoveFunc)(bool);
 
 bool load(const char* filename, vector<Attr> &attr) {
 	FILE* fin = fopen(filename, "rb");
@@ -24,9 +32,52 @@ bool load(const char* filename, vector<Attr> &attr) {
 	return true;
 }
 
+int walk(board &b, vector<Attr> &attr, int times)
+{
+	MoveFunc moveArr[4];
+	moveArr[0]=&board::up;
+	moveArr[1]=&board::down;
+	moveArr[2]=&board::left;
+	moveArr[3]=&board::right;
+	int earned=0;
+	for(int T=0; T<times; T++){
+		if(T!=0)
+			b.genCell();
+		board newb[4];
+		int earnScore[4], tmpScore, tar=-1;
+		bool die=true;
+		for(int i=0; i<4; i++){
+			newb[i]=b;
+			earnScore[i]=(newb[i].*moveArr[i])(false);
+			if(earnScore[i]!=-1){
+				die=false;
+				if(tar==-1){
+					tar=i;
+					tmpScore=earnScore[i]+getScore(newb[i],attr);
+				}
+			}
+		}
+		if(die)
+			break;
+		for(int i=tar; i<4; i++){
+			if(earnScore[i]!=-1){
+				float tmp=earnScore[i]+getScore(newb[i],attr);
+				if(tmpScore<tmp){
+					tar=i;
+					tmpScore=tmp;
+				}
+			}
+		}
+		earned+=earnScore[tar];
+		b=newb[tar];
+	}
+	return earned;
+}
+
 int main(int argc, char* argv[]) {
 	genMap();
 	board b;
+	srand(time(NULL));
 	b.init();
 	b.print();
 	int sum=0;
