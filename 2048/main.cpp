@@ -89,7 +89,45 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "file open failed.\n");
 			return 1;
 		}
-
+		MoveFunc moveArr[4];
+		moveArr[0]=&board::up;
+		moveArr[1]=&board::down;
+		moveArr[2]=&board::left;
+		moveArr[3]=&board::right;
+		int score=0;
+		do{
+			board newb[4];
+			int earnScore[4], tmpScore, tar=-1;
+			bool die=true;
+			for(int i=0; i<4; i++){
+				newb[i]=b;
+				earnScore[i]=(newb[i].*moveArr[i])(false);
+				if(earnScore[i]!=-1){
+					die=false;
+					if(tar==-1){
+						tar=i;
+						tmpScore=earnScore[i]+getScore(newb[i],attr);
+					}
+				}
+			}
+			if(die)
+				break;
+			for(int i=tar; i<4; i++){
+				if(earnScore[i]!=-1){
+					newb[i].genCell();
+					float tmp=earnScore[i]+walk(newb[i], attr, 1); // should at least one
+					tmp+=getScore(newb[i],attr);
+					if(tmpScore<tmp){
+						tar=i;
+						tmpScore=tmp;
+					}
+				}
+			}
+			score+=(b.*moveArr[tar])(false);
+			b.genCell();
+		}while(1);
+		b.print();
+		printf("%d\n",score);
 	} else {
 		char str[10];
 		while( ~scanf("%s", str) ) {
