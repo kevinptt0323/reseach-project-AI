@@ -153,7 +153,7 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 			}
 		}
 		if( learn && T%100 == 99 ){
-			printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
+			//printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
 			goal=0;
 			maxstep=0;
 			maxscore=0;
@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
 		}
 		run(attr, learnTimes, learnSpeed);
 		if( !save(out, attr) ) {
-			printf("file open failed.\n");
+			fprintf(stderr,"file open failed.\n");
 			return 1;
 		}
 	}else{
@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
 			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen,learnTimes/1000,learnSpeed);
 			learn3(attr, learnTimes, learnSpeed);
 			if( !save(out, attr) ) {
-				printf("file open failed.\n");
+				fprintf(stderr,"file open failed.\n");
 				return 1;
 			}
 			strcpy(in,out);
