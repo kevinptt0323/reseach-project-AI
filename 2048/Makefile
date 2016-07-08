@@ -1,5 +1,6 @@
 CXX      = g++
 CXXFLAGS = -Wall -Wshadow -O2 -Im -std=c++11
+ID       = 1
 
 all: kevinptt learn gen
 
@@ -15,6 +16,21 @@ kevinptt: main.cpp board.hpp board-kevinptt.hpp
 bsnipers: main.cpp board.hpp board-bsnipers.hpp
 	$(CXX) $(CXXFLAGS) -DBSNIPERS $< -o $@.out
 
+learnall:
+	./learn.out zero$(ID).dat LR 1000 0.1 &
+	./learn.out zero$(ID).dat LR 1000 0.04 &
+	./learn.out zero$(ID).dat LR 1000 0.02 &
+	./learn.out zero$(ID).dat LR 1000 0.01 &
+	./learn.out zero$(ID).dat LR 1000 0.005 &
+	./learn.out zero$(ID).dat LR 10000 0.1 &
+	./learn.out zero$(ID).dat LR 10000 0.04 &
+	./learn.out zero$(ID).dat LR 10000 0.02 &
+	./learn.out zero$(ID).dat LR 10000 0.01 &
+	./learn.out zero$(ID).dat LR 10000 0.005 &
+
 clean:
 	$(RM) *.out
+
+cleanLR:
+	$(RM) LR*.dat
 
