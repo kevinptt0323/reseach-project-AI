@@ -8,7 +8,7 @@
 #define FRWERROR(str,num) if(int(str)!=int(num)) puts("error");
 
 #define GENSET 1
-#define SETSIZE 3
+#define SETSIZE 13
 #define NORAND 0
 
 int attrN;
@@ -18,7 +18,15 @@ unsigned long long ini[30]={(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12),
 							(0x1<<0)|(0x2<<4)|(0x4<<8)|(0x5<<12),
 							(0x2<<0)|(0x4<<4)|(0x5<<8)|(0x6<<12),
 							(0x2<<0)|(0x3<<4)|(0x4<<8)|(0x5<<12),
-							(0x0<<0)|(0x1<<4)|(0x3<<8)|(0x7<<12)
+							(0x0<<0)|(0x2<<4)|(0x3<<8)|(0x4<<12),
+							(0x0<<0)|(0x1<<4)|(0xb<<8)|(0xf<<12),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x5<<20),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x6<<20),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x7<<20),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x3<<12)|(0x4<<16)|(0x8<<20),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x4<<12)|(0x5<<16)|(0x6<<20),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0x7<<12)|(0xb<<16)|(0xf<<20),
+							(0x0<<0)|(0x1<<4)|(0x2<<8)|(0xb<<12)|(0xe<<16)|(0xf<<20)
 							};
 
 
@@ -48,36 +56,32 @@ int main()
 	for(int i=0; i<ATTR_DATA_SIZE; i++)
 		attr[0].data[i]=0;
 #if GENSET
-	for(int T=1; T<1<<SETSIZE; T++){
+	for(int T=1; T<=SETSIZE+50; T++){
 		sprintf(name,"zero%d.dat",T);
 		out=fopen(name,"wb");
-		n=0;
-		for(int i=0; i<SETSIZE; i++)
-			if(T&(1<<i))
-				n++;
+		if(T<=SETSIZE)
+			n=1;
+		else
+			n=rand()%3+2;
+		int onehot[SETSIZE]={0};
+		for(int i=0; i<n; i++){
+			int tar=rand()%SETSIZE;
+			if(onehot[tar]==1)
+				i--;
+			else
+				onehot[tar]=1;
+		}
 		FRWERROR(fwrite(&n,sizeof(int),1,out),1)
 		for(int i=0; i<SETSIZE; i++){
-			if(!(T&(1<<i))) continue;
+			if( (T<=SETSIZE && i+1!=T) || (T>SETSIZE && onehot[i]==0) ) continue;
 			int slotNum=0;
 			for(int j=0; j<3 || (ini[i]>>(j<<2)); j++)
 				slotNum++;
-			//int arr[10];
 			attr[0].slotNum=slotNum;
 			attr[0].position=ini[i];
-			/*
-			for(int j=0; j<slotNum; j++){
-				arr[j]=(ini[i]>>(j<<2))&0xf;
-			}
-			board b;
-			memset(b.row,0,sizeof(b.row));
-			for(int j=0; j<slotNum; j++){
-				b.setCell(arr[j]>>2,arr[j]&0x3,j+1);
-			}
-			b.print();
-			*/
 			FRWERROR(fwrite(&attr[0].slotNum,sizeof(int),1,out),1)
 			FRWERROR(fwrite(&attr[0].position,sizeof(int),1,out),1)
-			FRWERROR(fwrite(&attr[0].data,sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
+			FRWERROR(fwrite(&(*attr[0].data),sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
 		}
 		fclose(out);
 	}
@@ -116,7 +120,7 @@ int main()
 		b.print();
 		FRWERROR(fwrite(&attr[0].slotNum,sizeof(int),1,out),1)
 		FRWERROR(fwrite(&attr[0].position,sizeof(int),1,out),1)
-		FRWERROR(fwrite(&attr[0].data,sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
+		FRWERROR(fwrite(&(*attr[0].data),sizeof(float),1<<(slotNum<<2),out),1<<(slotNum<<2))
 	}
 	fclose(out);
 #endif
