@@ -1,5 +1,6 @@
 CXX      = g++
 CXXFLAGS = -Wall -Wshadow -O2 -Im -std=c++11
+RM       = rm -f
 ID       = 1
 
 all: kevinptt learn gen
