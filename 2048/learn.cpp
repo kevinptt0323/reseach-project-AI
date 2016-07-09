@@ -220,7 +220,7 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "file open failed.\n");
 			return 1;
 		}
-		for(int gen=1; gen<=5; gen++){	//generation
+		for(int gen=1; gen<=3; gen++){	//generation
 			if( gen!=1 )
 				if( !load(in, attr) ) {
 					fprintf(stderr, "file open failed.\n");
