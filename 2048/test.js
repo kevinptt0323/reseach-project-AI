@@ -10,10 +10,10 @@ const run = function(ID, times, speed) {
   spawn('renice', [20, child.pid]);
   child.stdout.on('end', function() {
     console.log(`end ${ID} ${times} ${speed}`);
-    run(ID+2);
+    run(ID+2, 10000, speed);
   });
 }
 
 speeds.map(function(speed) {
-  run(4, 10000, speed);
+  run(6, 10000, speed);
 });
