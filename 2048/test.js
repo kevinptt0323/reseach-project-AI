@@ -2,17 +2,18 @@ const spawn = require('child_process').spawn;
 //const ID = process.argv[2];
 const speeds = [0.04, 0.01, 0.005];
 
-const run = function(ID) {
+const run = function(ID, times, speed) {
   if( ID>60 ) return;
-  const childs = speeds.map(function(speed) {
-    console.log(`start ${ID} ${speed}`);
-    const child = spawn('./learn.out', ['zero' + ID + '.dat', 'LR', 10000, speed]);
-    spawn('renice', [20, child.pid]);
-    child.stdout.on('end', function() {
-      console.log(`end ${ID} ${speed}`);
-      run(ID+1);
-    });
+
+  console.log(`start ${ID} ${times} ${speed}`);
+  const child = spawn('./learn.out', ['zero' + ID + '.dat', 'LR', times, speed]);
+  spawn('renice', [20, child.pid]);
+  child.stdout.on('end', function() {
+    console.log(`end ${ID} ${times} ${speed}`);
+    run(ID+2);
   });
 }
 
-run(1);
+speeds.map(function(speed) {
+  run(4, 10000, speed);
+});
