@@ -16,7 +16,6 @@ for(let i=1; i<=1; i++) {
         let child = spawnSync('./kevinptt.out', [filename]);
         let ret = child.stdout.toString().split("\n");
         res[filename].push(parseInt(ret[ret.length-2]));
-        spawnSync('sleep', [0.1]);
       }
     }
   }

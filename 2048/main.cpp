@@ -9,6 +9,7 @@
 #include <ctime>
 
 #include <vector>
+#include <random>
 
 using namespace std;
 
@@ -77,7 +78,12 @@ int walk(board &b, vector<Attr> &attr, int times)
 int main(int argc, char* argv[]) {
 	genMap();
 	board b;
-	srand(time(NULL));
+	{
+		random_device rd;
+		minstd_rand RNG(rd());
+		uniform_int_distribution<int> uid(0, 32768);
+		srand(uid(RNG));
+	}
 	b.init();
 	b.print();
 	int sum=0;
