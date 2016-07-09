@@ -114,8 +114,7 @@ int main(int argc, char* argv[]) {
 				break;
 			for(int i=tar; i<4; i++){
 				if(earnScore[i]!=-1){
-					newb[i].genCell();
-					float tmp=earnScore[i]+walk(newb[i], attr, 1); // should at least one
+					float tmp=earnScore[i]+walk(newb[i], attr, 0); // should at least one
 					tmp+=getScore(newb[i],attr);
 					if(tmpScore<tmp){
 						tar=i;
