@@ -31,7 +31,7 @@ data arr[600];
 
 vector<Attr> zeroAttr[100];
 
-char str[10000];
+char str[100000];
 
 bool load(const char* filename, vector<Attr> &attr) {
 	FILE* fin = fopen(filename, "rb");
@@ -62,30 +62,26 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	FILE* res=fopen("result.csv","r");
-	fgets(str,10000,res);
+	fgets(str,100000,res);
 	char *ptr=strtok(str,",");
 	for(int i=0; i<540; i++){
 		sscanf(ptr,"LR%d-%d-%*d-0.%d.dat",&arr[i].set.ID,&arr[i].set.gen,&arr[i].set.speed);
 		ptr=strtok(NULL,",");
-		printf("%d %d %d %d\n",i,arr[i].set.ID,arr[i].set.gen,arr[i].set.speed);
-		if(ptr==NULL)
-			printf("err\n");
+		arr[i].avg=0;
 	}
 	for(int i=0; i<1000; i++){
-		fgets(str,10000,res);
+		fgets(str,100000,res);
 		ptr=strtok(str,",");
 		for(int j=0; j<540; j++){
 			int sco;
 			sscanf(ptr,"%d",&sco);
 			ptr=strtok(NULL,",");
 			arr[j].score.push_back(sco);
+			arr[j].avg+=sco;
 		}
 	}
-	fgets(str,10000,res);
-	ptr=strtok(str,",");
 	for(int i=0; i<540; i++){
-		sscanf(ptr,"%lf",&arr[i].avg);
-		ptr=strtok(NULL,",");
+		arr[i].avg/=1000;
 	}
 	return 0;
 }
