@@ -109,27 +109,31 @@ int main(int argc, char* argv[]) {
 		arr[i].avg/=1000;
 	}
 	sort(arr,arr+540,cmp);
+	int divCnt[5]={0};
 	for(int i=0; i<540; i++){
 		int tar=-1,ID=arr[i].set.ID;
 		for(int j=0; j<5; j++)
 			if(arr[i].avg>division[j])
 				tar=j;
+		divCnt[tar]++;
 		for(int j=0; j<(int)zeroAttr[ID].size(); j++)
 			states[tar].tupleCnt[mmap[zeroAttr[ID][j].position]]++;
 		states[tar].gen[arr[i].set.gen]++;
 		states[tar].learnSpeed[arr[i].set.speed]++;
 	}
-	for(int i=1; i<tupleNum; i++){
-		int sum=0;
-		for(int j=0; j<5; j++){
-			sum+=states[j].tupleCnt[i];
-		}
-		printf("%3d ",sum);
-	}
+	for(int i=0; i<5; i++)
+		printf("%.2f ",1.0*divCnt[i]/540);
 	puts("");
+	int tupleSum[5];
+	for(int i=1; i<tupleNum; i++){
+		tupleSum[i]=0;
+		for(int j=0; j<5; j++){
+			tupleSum[i]+=states[j].tupleCnt[i];
+		}
+	}
 	for(int i=0; i<5; i++){
 		for(int j=1; j<tupleNum; j++)
-			printf("%3d ",states[i].tupleCnt[j]);
+			printf("%.2f ",1.0*states[i].tupleCnt[j]/tupleSum[j]);
 		puts("");
 		for(int j=1; j<=3; j++)
 			printf("%d ",states[i].gen[j]);
