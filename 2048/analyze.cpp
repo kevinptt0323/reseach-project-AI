@@ -42,6 +42,7 @@ vector<Attr> zeroAttr[100];
 map<int,int> mmap;
 int tupleNum;
 int position[20];
+double tupleAvg[20];
 
 statistic states[5];
 int division[5]={0,10000,20000,40000,10000000};
@@ -110,14 +111,27 @@ int main(int argc, char* argv[]) {
 	}
 	sort(arr,arr+540,cmp);
 	int divCnt[5]={0};
+	for(int i=0; i<tupleNum; i++){
+		tupleAvg[i]=0;
+	}
+	for(int i=0; i<5; i++){
+		for(int j=0; j<13; j++)
+			states[i].tupleCnt[j]=0;
+		for(int j=0; j<5; j++)
+			states[i].gen[j]=0;
+		for(int j=0; j<50; j++)
+			states[i].learnSpeed[j]=0;
+	}
 	for(int i=0; i<540; i++){
 		int tar=-1,ID=arr[i].set.ID;
 		for(int j=0; j<5; j++)
 			if(arr[i].avg>division[j])
 				tar=j;
 		divCnt[tar]++;
-		for(int j=0; j<(int)zeroAttr[ID].size(); j++)
+		for(int j=0; j<(int)zeroAttr[ID].size(); j++){
 			states[tar].tupleCnt[mmap[zeroAttr[ID][j].position]]++;
+			tupleAvg[mmap[zeroAttr[ID][j].position]]+=arr[i].avg;
+		}
 		states[tar].gen[arr[i].set.gen]++;
 		states[tar].learnSpeed[arr[i].set.speed]++;
 	}
@@ -130,6 +144,10 @@ int main(int argc, char* argv[]) {
 		for(int j=0; j<5; j++){
 			tupleSum[i]+=states[j].tupleCnt[i];
 		}
+	}
+	for(int i=1; i<tupleNum; i++){
+		tupleAvg[i]/=tupleSum[i];
+		printf("tuple ID:%d\t average score:%f\n",i,tupleAvg[i]);
 	}
 	for(int i=0; i<5; i++){
 		for(int j=1; j<tupleNum; j++)
@@ -157,5 +175,11 @@ int main(int argc, char* argv[]) {
 		printf("tuple ID: %d\n",i);
 		b.print();
 	}
+	int tarID=44;
+	printf("tuple %d:\n",tarID);
+	for(int i=0; i<(int)zeroAttr[tarID].size(); i++){
+		printf("%d ",mmap[zeroAttr[tarID][i].position]);
+	}
+	puts("");
 	return 0;
 }
