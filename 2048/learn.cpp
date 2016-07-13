@@ -221,17 +221,18 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 		for(int gen=1; gen<=3; gen++){	//generation
-			if( gen!=1 )
+			if( 0 && gen!=1 )
 				if( !load(in, attr) ) {
 					fprintf(stderr, "file open failed.\n");
 					return 1;
 				}
 			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen,learnTimes/1000,learnSpeed);
 			learn3(attr, learnTimes, learnSpeed);
-			if( !save(out, attr) ) {
-				fprintf(stderr,"file open failed.\n");
-				return 1;
-			}
+			if(gen==3)
+				if( !save(out, attr) ) {
+					fprintf(stderr,"file open failed.\n");
+					return 1;
+				}
 			strcpy(in,out);
 		}
 	}
