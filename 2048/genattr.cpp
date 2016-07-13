@@ -7,9 +7,9 @@
 
 #define FRWERROR(str,num) if(int(str)!=int(num)) puts("error");
 
-#define GENSET 1
+#define GENSET 0
 #define SETSIZE 13
-#define NORAND 0
+#define NORAND 1
 
 int attrN;
 Attr attr[10];
@@ -48,6 +48,7 @@ int main()
 	n=SETSIZE;//meaningless
 #elif NORAND
 	n=3;
+	scanf("%d",&n);
 #else
 	n=rand()%20+10;
 #endif
@@ -92,10 +93,16 @@ int main()
 		int slotNum=4;
 		int arr[10];
 #if NORAND
+		int tar;
+		scanf("%d",&tar);
+		tar--;
+		slotNum=0;
+		for(int j=0; j<3 || (ini[tar]>>(j<<2)); j++)
+			slotNum++;
 		attr[0].slotNum=slotNum;
-		attr[0].position=ini[i];
+		attr[0].position=ini[tar];
 		for(int j=0; j<slotNum; j++){
-			arr[j]=(ini[i]>>(j<<2))&0xf;
+			arr[j]=(ini[tar]>>(j<<2))&0xf;
 		}
 #else
 		for(int j=0; j<slotNum; j++){
