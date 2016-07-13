@@ -1,10 +1,10 @@
 const spawnSync = require('child_process').spawnSync;
 const speeds = ['0.040', '0.010', '0.005'];
-const times = 5;
+const times = 1000;
 
 let res = {};
 
-for(let i=1; i<=1; i++) {
+for(let i=61; i<=61; i++) {
   for(let j=1; j<=3; j++) {
     for(let speed of speeds) {
       let filename = `LR${i}-${j}-10-${speed}.dat`;
@@ -20,4 +20,4 @@ for(let i=1; i<=1; i++) {
     }
   }
 }
-console.log(JSON.stringify(res, null, 2));
+console.log(JSON.stringify(res));
