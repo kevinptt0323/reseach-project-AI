@@ -47,6 +47,9 @@ double tupleAvg[20];
 statistic states[5];
 int division[5]={0,10000,20000,40000,10000000};
 
+double pairAvg[20][20];
+int pairAvgCnt[20][20];
+
 char str[100000];
 
 bool load(const char* filename, vector<Attr> &attr) {
@@ -109,7 +112,49 @@ int main(int argc, char* argv[]) {
 	for(int i=0; i<540; i++){
 		arr[i].avg/=1000;
 	}
+	for(int i=0; i<tupleNum; i++)
+		for(int j=0; j<tupleNum; j++){
+			pairAvg[i][j]=0;
+			pairAvgCnt[i][j]=0;
+		}
 	sort(arr,arr+540,cmp);
+	
+	for(int i=0; i<540; i++){
+		for(int j=0; j<(int)zeroAttr[arr[i].set.ID].size(); j++){
+			for(int k=j+1; k<(int)zeroAttr[arr[i].set.ID].size(); k++){
+				int a,b;
+				a=mmap[zeroAttr[arr[i].set.ID][j].position];
+				b=mmap[zeroAttr[arr[i].set.ID][k].position];
+				pairAvg[a][b]+=arr[i].avg;
+				pairAvg[b][a]+=arr[i].avg;
+				pairAvgCnt[a][b]++;
+				pairAvgCnt[b][a]++;
+			}
+		}
+		if(zeroAttr[arr[i].set.ID].size()==1){
+			int a=mmap[zeroAttr[arr[i].set.ID][0].position];
+			pairAvg[a][a]+=arr[i].avg;
+			pairAvgCnt[a][a]++;
+		}
+		if(0 && arr[i].set.gen==3 && arr[i].set.speed==5){
+			printf("%f\t",arr[i].avg);
+			int tarID=arr[i].set.ID;
+			for(int i=0; i<(int)zeroAttr[tarID].size(); i++){
+				printf("%d ",mmap[zeroAttr[tarID][i].position]);
+			}
+			puts("");
+		}
+	}
+	for(int i=1; i<tupleNum; i++){
+		printf("%d\n",i);
+		for(int j=1; j<tupleNum; j++){
+			if(pairAvgCnt[i][j]==0)
+				printf("%2d ------\t",j);
+			else
+				printf("%2d %6.0f\t",j,pairAvg[i][j]/pairAvgCnt[i][j]);
+		}
+		puts("");
+	}
 	int divCnt[5]={0};
 	for(int i=0; i<tupleNum; i++){
 		tupleAvg[i]=0;
@@ -175,11 +220,13 @@ int main(int argc, char* argv[]) {
 		printf("tuple ID: %d\n",i);
 		b.print();
 	}
-	int tarID=44;
-	printf("tuple %d:\n",tarID);
-	for(int i=0; i<(int)zeroAttr[tarID].size(); i++){
-		printf("%d ",mmap[zeroAttr[tarID][i].position]);
+	for(int I=1; 0 && I<=60; I++){
+		int tarID=I;
+		printf("tuple %d:\n",tarID);
+		for(int i=0; i<(int)zeroAttr[tarID].size(); i++){
+			printf("%d ",mmap[zeroAttr[tarID][i].position]);
+		}
+		puts("");
 	}
-	puts("");
 	return 0;
 }
