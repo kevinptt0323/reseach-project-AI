@@ -45,30 +45,21 @@ int walk(board &b, vector<Attr> &attr, int times)
 		if(T!=0)
 			b.genCell();
 		board newb[4];
-		int earnScore[4], tmpScore, tar=-1;
-		bool die=true;
+		int earnScore[4], tar=-1;
+		float tarScore, tmpScore;
 		for(int i=0; i<4; i++){
 			newb[i]=b;
 			earnScore[i]=(newb[i].*moveArr[i])(false);
 			if(earnScore[i]!=-1){
-				die=false;
-				if(tar==-1){
+				tmpScore = earnScore[i]+getScore(newb[i],attr);
+				if(tar==-1 || tmpScore>tarScore){
 					tar=i;
-					tmpScore=earnScore[i]+getScore(newb[i],attr);
+					tarScore = tmpScore;
 				}
 			}
 		}
-		if(die)
+		if(tar==-1)
 			break;
-		for(int i=tar; i<4; i++){
-			if(earnScore[i]!=-1){
-				float tmp=earnScore[i]+getScore(newb[i],attr);
-				if(tmpScore<tmp){
-					tar=i;
-					tmpScore=tmp;
-				}
-			}
-		}
 		earned+=earnScore[tar];
 		b=newb[tar];
 	}
@@ -103,31 +94,21 @@ int main(int argc, char* argv[]) {
 		int score=0;
 		do{
 			board newb[4];
-			int earnScore[4], tmpScore, tar=-1;
-			bool die=true;
+			int earnScore[4], tar=-1;
+			float tarScore, tmpScore;
 			for(int i=0; i<4; i++){
 				newb[i]=b;
 				earnScore[i]=(newb[i].*moveArr[i])(false);
 				if(earnScore[i]!=-1){
-					die=false;
-					if(tar==-1){
+					tmpScore = earnScore[i]+getScore(newb[i],attr);
+					if(tar==-1 || tmpScore>tarScore){
 						tar=i;
-						tmpScore=earnScore[i]+getScore(newb[i],attr);
+						tarScore = tmpScore;
 					}
 				}
 			}
-			if(die)
+			if(tar==-1)
 				break;
-			for(int i=tar; i<4; i++){
-				if(earnScore[i]!=-1){
-					float tmp=earnScore[i]+walk(newb[i], attr, 0); // should at least one
-					tmp+=getScore(newb[i],attr);
-					if(tmpScore<tmp){
-						tar=i;
-						tmpScore=tmp;
-					}
-				}
-			}
 			score+=(b.*moveArr[tar])(false);
 			b.genCell();
 		}while(1);
