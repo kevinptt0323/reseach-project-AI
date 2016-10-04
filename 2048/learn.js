@@ -6,14 +6,14 @@ const run = function(ID, times, speed) {
   //if( ID>60 ) return;
 
   console.log(`start ${ID} ${times} ${speed}`);
-  const child = spawn('./learn.out', ['zero' + ID + '.dat', 'LR', times, speed]);
+  const child = spawn('./learn.out', [`zero${ID}.dat`, 'LR', times, speed]);
   spawn('renice', [20, child.pid]);
   child.stdout.on('end', function() {
     console.log(`end ${ID} ${times} ${speed}`);
-    //run(ID+2, 10000, speed);
+    run(ID+3, 10000, speed);
   });
 }
 
-speeds.map(function(speed) {
-  run(61, 10000, speed);
-});
+run(1, 10000, 0.005);
+run(2, 10000, 0.005);
+run(3, 10000, 0.005);
