@@ -6,6 +6,7 @@
 #include "attr.hpp"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 
 #include <vector>

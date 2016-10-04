@@ -139,8 +139,8 @@ int main(int argc, char* argv[]) {
 		if(0 && arr[i].set.gen==3 && arr[i].set.speed==5){
 			printf("%f\t",arr[i].avg);
 			int tarID=arr[i].set.ID;
-			for(int i=0; i<(int)zeroAttr[tarID].size(); i++){
-				printf("%d ",mmap[zeroAttr[tarID][i].position]);
+			for(int j=0; j<(int)zeroAttr[tarID].size(); j++){
+				printf("%d ",mmap[zeroAttr[tarID][j].position]);
 			}
 			puts("");
 		}

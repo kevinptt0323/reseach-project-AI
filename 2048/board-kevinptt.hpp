@@ -2,7 +2,6 @@
 #define _BOARD_KEVINPTT_HPP_
 
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
@@ -58,13 +57,16 @@ void genMap() {
 }
 
 class board {
+private:
+	int row[4];
 public:
 	board() {
+		row[0] = row[1] = row[2] = row[3] = 0;
 	}
 	~board() {
 	}
 	void init() {
-		memset(row, 0, sizeof(row));
+		row[0] = row[1] = row[2] = row[3] = 0;
 		genCell();
 		genCell();
 	}
@@ -72,10 +74,11 @@ public:
 		int ret=0;
 		bool change = false;
 		for(int i=0; i<4; ++i) {
-			if (row[i] != leftMap[row[i]])
+			if (row[i] != leftMap[row[i]]) {
 				change = true;
-			ret+=moveLeftScore[row[i]];
-			row[i] = leftMap[row[i]];
+				ret+=moveLeftScore[row[i]];
+				row[i] = leftMap[row[i]];
+			}
 		}
 		if (next && change)
 			genCell();
@@ -88,10 +91,11 @@ public:
 		int ret=0;
 		bool change = false;
 		for(int i=0; i<4; ++i) {
-			if (row[i] != rightMap[row[i]])
+			if (row[i] != rightMap[row[i]]) {
 				change = true;
-			ret+=moveRightScore[row[i]];
-			row[i] = rightMap[row[i]];
+				ret+=moveRightScore[row[i]];
+				row[i] = rightMap[row[i]];
+			}
 		}
 		if (next && change)
 			genCell();
@@ -169,16 +173,6 @@ public:
 		}
 		puts("---------------------------------");
 	}
-	int row[4];
-	inline int _empty() const {
-		int empty = 0;
-		for(int i=0; i<16; ++i)
-			empty |= (getCell(i>>2, i&0x3)==0)<<i;
-		return empty;
-	}
-	inline bool die() const {
-		return _empty()==0;
-	}
 	inline void genCell() {
 		ull pos=0;
 		int cnt=0;
@@ -191,23 +185,6 @@ public:
 			tar=(pos>>(tar<<2))&0xf;
 			setCell(tar>>2,tar&0x3,num);
 		}
-	}
-	bool movable() const
-	{
-		board tmp=*this;
-		tmp.left();
-		if(tmp!=*this)
-			return true;
-		tmp.right();
-		if(tmp!=*this)
-			return true;
-		tmp.up();
-		if(tmp!=*this)
-			return true;
-		tmp.down();
-		if(tmp!=*this)
-			return true;
-		return false;
 	}
 	inline int getCell(int x, int y) const {
 		return (row[x]>>((3-y)<<2)) & 0xf;
