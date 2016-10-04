@@ -13,8 +13,10 @@ using namespace std;
 typedef int (board::*MoveFunc)(bool);
 
 
-struct record
-{
+class record {
+public:
+	record() {}
+	record(board _s1, board _s2, int _earned):s1(_s1), s2(_s2), earned(_earned) {}
 	board s1,s2;
 	int earned;
 };
@@ -81,60 +83,53 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 	moveArr[1]=&board::down;
 	moveArr[2]=&board::left;
 	moveArr[3]=&board::right;
-	if( learn )
-		rec=vector<record>(1000);
 	double acc=0;
 	int maxscore=0, maxstep=0;
 	int goal=0;
 	for(int T=0; T<times; T++){
-		board b;
+		board b, b_pre;
 		b.init();
+		b_pre = b;
 		int score=0;
 		int step=1;
+		rec.clear();
 		do{
 			board newb[4];
-			int earnScore[4], tmpScore, tar=-1;
-			bool die=true;
+			int earnScore[4], tar=-1;
+			float tarScore, tmpScore;
 			for(int i=0; i<4; i++){
 				newb[i]=b;
 				earnScore[i]=(newb[i].*moveArr[i])(false);
 				if(earnScore[i]!=-1){
-					die=false;
-					if(tar==-1){
+					tmpScore = earnScore[i]+getScore(newb[i],attr);
+					if(tar==-1 || tmpScore>tarScore){
 						tar=i;
-						tmpScore=earnScore[i]+getScore(newb[i],attr);
+						tarScore = tmpScore;
 					}
 				}
 			}
-			if(die)
-				break;
-			for(int i=tar+1; i<4; i++){
-				if(earnScore[i]!=-1){
-					float tmp=earnScore[i]+getScore(newb[i],attr);
-					if(tmpScore<tmp){
-						tar=i;
-						tmpScore=tmp;
-					}
-				}
-			}
-			score+=earnScore[tar];
-			b=newb[tar];
+			if(tar==-1) break;
 			if( learn ) {
-				rec[step-1].s2=b;
-				rec[step-1].earned=earnScore[tar];
-				rec[step++].s1=b;
-				if(step==int(rec.size())){
-					rec.resize(rec.size()<<1);
-				}
+				rec.emplace_back(b_pre, newb[tar], earnScore[tar]);
+				++step;
+				b_pre = newb[tar];
+				//rec[step-1].s2=b;
+				//rec[step-1].earned=earnScore[tar];
+				//rec[step++].s1=b;
+				//if(step==int(rec.size())){
+				//	rec.resize(rec.size()<<1);
+				//}
 			}
+			b=newb[tar];
+			score+=earnScore[tar];
 			b.genCell();
 		}while(1);
 		if( learn ) {
-			for(int i=step-2; i>0; i--){
+			for(int i=rec.size()-1; i>0; i--){
 				float s1=getScore(rec[i].s1, attr);
 				float s2=getScore(rec[i].s2, attr);
-				if(i==step-2)
-					s2=-100;
+				if(i==rec.size()-1)
+					s2=0;
 				float dif=s2+rec[i].earned-s1;
 				updateAttr(rec[i].s1, attr, dif*learnSpeed);
 			}
@@ -142,6 +137,7 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 		acc+=score;
 		if(maxscore<score)
 			maxscore=score;
+		/*
 		if( learn ) {
 			if(maxstep<step)
 				maxstep=step;
@@ -151,9 +147,10 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 					break;
 				}
 			}
-		}
+		}*/
 		if( learn && T%100 == 99 ){
 			//printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
+			printf("%d,%f,%d\n",T+1,acc/100,maxscore);
 			goal=0;
 			maxstep=0;
 			maxscore=0;
@@ -163,27 +160,9 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 	return acc/times;
 }
 
-const int learnBranch=3;
-
-void learn3(vector<Attr> &attr, int learnTimes, double learnSpeed) {
-	vector<Attr> arr[learnBranch];
-	for(int i=0; i<learnBranch; i++){
-		deepCopy(arr[i],attr);
-		run(arr[i], learnTimes, learnSpeed);
-	}
+void learn(vector<Attr> &attr, int learnTimes, double learnSpeed) {
 	attrDestroy(attr);
-	int tar=0;
-	double mmax=0;
-	for(int i=0; i<learnBranch; i++){
-		double tmp=run(arr[i], 200);
-		if(mmax<tmp){
-			tar=i, mmax=tmp;
-		}
-	}
-	deepCopy(attr,arr[tar]);
-	for(int i=0; i<learnBranch; i++){
-		attrDestroy(arr[i]);
-	}
+	run(attr, learnTimes, learnSpeed);
 }
 
 int main(int argc, char* argv[]) {
@@ -220,15 +199,15 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "file open failed.\n");
 			return 1;
 		}
-		for(int gen=1; gen<=3; gen++){	//generation
+		for(int gen=1; gen<=1; gen++){	//generation
 			if( 0 && gen!=1 )
 				if( !load(in, attr) ) {
 					fprintf(stderr, "file open failed.\n");
 					return 1;
 				}
 			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen,learnTimes/1000,learnSpeed);
-			learn3(attr, learnTimes, learnSpeed);
-			if(gen==3)
+			learn(attr, learnTimes, learnSpeed);
+			if(gen==1)
 				if( !save(out, attr) ) {
 					fprintf(stderr,"file open failed.\n");
 					return 1;
