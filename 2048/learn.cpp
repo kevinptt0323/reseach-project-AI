@@ -76,7 +76,7 @@ void attrDestroy(vector<Attr> &attr) {
 	attr.clear();
 }
 
-double run(vector<Attr> &attr, int times, double learnSpeed = 0){
+double run(vector<Attr> &attr, int times, float learnSpeed = 0){
 	bool learn = learnSpeed > 1e-6;
 	MoveFunc moveArr[4];
 	moveArr[0]=&board::up;
@@ -113,9 +113,9 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 				rec.emplace_back(b_pre, newb[tar], earnScore[tar]);
 				++step;
 				b_pre = newb[tar];
-				//rec[step-1].s2=b;
+				//rec[step-1].s2=newb[tar];
 				//rec[step-1].earned=earnScore[tar];
-				//rec[step++].s1=b;
+				//rec[step++].s1=newb[tar];
 				//if(step==int(rec.size())){
 				//	rec.resize(rec.size()<<1);
 				//}
@@ -150,7 +150,7 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 		}*/
 		if( learn && T%100 == 99 ){
 			//printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
-			printf("%d,%f,%d\n",T+1,acc/100,maxscore);
+			printf("%10d,%10.3f,%10d\n",T+1,acc/100,maxscore);
 			goal=0;
 			maxstep=0;
 			maxscore=0;
@@ -158,11 +158,6 @@ double run(vector<Attr> &attr, int times, double learnSpeed = 0){
 		}
 	}
 	return acc/times;
-}
-
-void learn(vector<Attr> &attr, int learnTimes, double learnSpeed) {
-	attrDestroy(attr);
-	run(attr, learnTimes, learnSpeed);
 }
 
 int main(int argc, char* argv[]) {
@@ -205,8 +200,8 @@ int main(int argc, char* argv[]) {
 					fprintf(stderr, "file open failed.\n");
 					return 1;
 				}
-			sprintf(out,"LR%d-%d-%d-%5.3f.dat",ID,gen,learnTimes/1000,learnSpeed);
-			learn(attr, learnTimes, learnSpeed);
+			sprintf(out,"LR%d-%d-%dk-%6.4f.dat",ID,gen,learnTimes/1000,learnSpeed);
+			run(attr, learnTimes, learnSpeed);
 			if(gen==1)
 				if( !save(out, attr) ) {
 					fprintf(stderr,"file open failed.\n");
