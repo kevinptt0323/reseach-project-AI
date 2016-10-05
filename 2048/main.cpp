@@ -115,6 +115,9 @@ int main(int argc, char* argv[]) {
 		}while(1);
 		b.print();
 		printf("%d\n",score);
+		for(int i=0; i<(int)attr.size(); i++) {
+			delete[] attr[i].data;
+		}
 	} else {
 		char str[10];
 		while( ~scanf("%s", str) ) {
