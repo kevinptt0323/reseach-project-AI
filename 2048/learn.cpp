@@ -100,7 +100,7 @@ double run(vector<Attr> &attr, int times, float learnSpeed = 0){
 			for(int i=0; i<4; i++){
 				newb[i]=b;
 				earnScore[i]=(newb[i].*moveArr[i])(false);
-				if(earnScore[i]!=-1){
+				if(earnScore[i]!=-INF){
 					tmpScore = earnScore[i]+getScore(newb[i],attr);
 					if(tar==-1 || tmpScore>tarScore){
 						tar=i;

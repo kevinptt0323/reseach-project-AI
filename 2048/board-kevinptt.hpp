@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
+#define INF 0x71227122
 using namespace std;
 
 typedef unsigned long long ull;
@@ -83,7 +84,7 @@ public:
 		if (next && change)
 			genCell();
 		if(!change)
-			return -1;
+			return -INF;
 		else
 			return ret;
 	}
@@ -100,7 +101,7 @@ public:
 		if (next && change)
 			genCell();
 		if(!change)
-			return -1;
+			return -INF;
 		else
 			return ret;
 	}
