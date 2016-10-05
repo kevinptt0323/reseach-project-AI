@@ -148,9 +148,9 @@ double run(vector<Attr> &attr, int times, float learnSpeed = 0){
 				}
 			}
 		}*/
-		if( learn && T%100 == 99 ){
+		if( learn && T%1000 == 999 ){
 			//printf("times: %d\tscore: %f\tmaxstep: %d\tmaxscore: %d\t%d\n",T+1,acc/100,maxstep,maxscore,goal);
-			printf("%10d,%10.3f,%10d\n",T+1,acc/100,maxscore);
+			printf("%10d,%10.3f,%10d\n",T+1,acc/1000,maxscore);
 			goal=0;
 			maxstep=0;
 			maxscore=0;
