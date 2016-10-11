@@ -125,11 +125,10 @@ double run(vector<Attr> &attr, int times, float learnSpeed = 0){
 			b.genCell();
 		}while(1);
 		if( learn ) {
+			updateAttr(rec.back().s2, attr, 0-getScore(rec.back().s1, attr));
 			for(int i=rec.size()-1; i>0; i--){
 				float s1=getScore(rec[i].s1, attr);
 				float s2=getScore(rec[i].s2, attr);
-				if(i==rec.size()-1)
-					s2=0;
 				float dif=s2+rec[i].earned-s1;
 				updateAttr(rec[i].s1, attr, dif*learnSpeed);
 			}
