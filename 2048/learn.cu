@@ -618,74 +618,50 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 	srand(time(NULL));
-	int ID;
-	if (1 || sscanf(in, "zero%d.dat", &ID) != 1){
-		pair<clock_t, clock_t> real;
-		real.first = clock();
-		if (!load(in, attr)) {
-			fprintf(stderr, "file open failed.\n");
-			return 1;
-		}
-		cudaDeviceProp DeviceProp;
-		cudaGetDeviceProperties(&DeviceProp, 0);
-		double freq = DeviceProp.clockRate;
-		freq *= 1000;
-		int learnCnt_h[3] = { 0, 0, 0 };
-		int *learnCnt_d;
-		int *recProgress_d;
-		for (int i = 0; i<10005; i++){
-			recProgress_h[i][0] = 0,
-				recProgress_h[i][1] = 0;
-			recProgress_h[i][2] = 0;
-		}
-		cudaMalloc((void**)&learnCnt_d, sizeof(int));
-		cudaMalloc((void**)&recProgress_d, 10005 * 3 * sizeof(int));
-		cudaMemcpy(learnCnt_d, &learnCnt_h, 3 * sizeof(int), cudaMemcpyHostToDevice);
-		cudaMemcpy(recProgress_d, recProgress_h, 10005 * 3 * sizeof(int), cudaMemcpyHostToDevice);
-		pair<clock_t, clock_t> run_t;
-		run_t.first = clock();
-		run(attr, learnTimes, learnSpeed, learnCnt_d, recProgress_d);
-		run_t.second = clock();
-		cudaMemcpy(recProgress_h, recProgress_d, 10005 * 3 * sizeof(int), cudaMemcpyDeviceToHost);
-		FILE *recfile = fopen("rec.csv", "w");
-		long long sumRec2 = 0;
-		for (int i = 0; i<learnTimes / 1000; i++){
-			fprintf(recfile, "%10d,%10.3f,%10d,%10d\n", (i + 1) * 1000, (double)recProgress_h[i][0] / 1000, recProgress_h[i][1], recProgress_h[i][2]);
-			sumRec2 += recProgress_h[i][2];
-		}
-		printf("Speed: %.2f steps/s\n", 1.*sumRec2 / (run_t.second - run_t.first) *CLOCKS_PER_SEC);
-		printf("Training time: %.3f s\n", 1.*(run_t.second - run_t.first) / CLOCKS_PER_SEC);
-		fclose(recfile);
-		cudaFree(learnCnt_d);
-		cudaFree(recProgress_d);
-		if (!save(out, attr)) {
-			fprintf(stderr, "file open failed.\n");
-			return 1;
-		}
-		real.second = clock();
-		printf("Real time: %.3f s\n", 1.*(real.second - real.first) / CLOCKS_PER_SEC);
+	pair<clock_t, clock_t> real;
+	real.first = clock();
+	if (!load(in, attr)) {
+		fprintf(stderr, "file open failed.\n");
+		return 1;
 	}
-	else{
-		if (!load(in, attr)) {
-			fprintf(stderr, "file open failed.\n");
-			return 1;
-		}
-		for (int gen = 1; gen <= 1; gen++){	//generation
-			if (0 && gen != 1)
-				if (!load(in, attr)) {
-					fprintf(stderr, "file open failed.\n");
-					return 1;
-				}
-			sprintf(out, "LR%d-%d-%dk-%6.4f.dat", ID, gen, learnTimes / 1000, learnSpeed);
-			run(attr, learnTimes, learnSpeed);
-			if (gen == 1)
-				if (!save(out, attr)) {
-					fprintf(stderr, "file open failed.\n");
-					return 1;
-				}
-			strcpy(in, out);
-		}
+	cudaDeviceProp DeviceProp;
+	cudaGetDeviceProperties(&DeviceProp, 0);
+	double freq = DeviceProp.clockRate;
+	freq *= 1000;
+	int learnCnt_h[3] = { 0, 0, 0 };
+	int *learnCnt_d;
+	int *recProgress_d;
+	for (int i = 0; i<10005; i++){
+		recProgress_h[i][0] = 0,
+			recProgress_h[i][1] = 0;
+		recProgress_h[i][2] = 0;
 	}
+	cudaMalloc((void**)&learnCnt_d, sizeof(int));
+	cudaMalloc((void**)&recProgress_d, 10005 * 3 * sizeof(int));
+	cudaMemcpy(learnCnt_d, &learnCnt_h, 3 * sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy(recProgress_d, recProgress_h, 10005 * 3 * sizeof(int), cudaMemcpyHostToDevice);
+	pair<clock_t, clock_t> run_t;
+	run_t.first = clock();
+	run(attr, learnTimes, learnSpeed, learnCnt_d, recProgress_d);
+	run_t.second = clock();
+	cudaMemcpy(recProgress_h, recProgress_d, 10005 * 3 * sizeof(int), cudaMemcpyDeviceToHost);
+	FILE *recfile = fopen("rec.csv", "w");
+	long long sumRec2 = 0;
+	for (int i = 0; i<learnTimes / 1000; i++){
+		fprintf(recfile, "%10d,%10.3f,%10d,%10d\n", (i + 1) * 1000, (double)recProgress_h[i][0] / 1000, recProgress_h[i][1], recProgress_h[i][2]);
+		sumRec2 += recProgress_h[i][2];
+	}
+	printf("Speed: %.2f steps/s\n", 1.*sumRec2 / (run_t.second - run_t.first) *CLOCKS_PER_SEC);
+	printf("Training time: %.3f s\n", 1.*(run_t.second - run_t.first) / CLOCKS_PER_SEC);
+	fclose(recfile);
+	cudaFree(learnCnt_d);
+	cudaFree(recProgress_d);
+	if (!save(out, attr)) {
+		fprintf(stderr, "file open failed.\n");
+		return 1;
+	}
+	real.second = clock();
+	printf("Real time: %.3f s\n", 1.*(real.second - real.first) / CLOCKS_PER_SEC);
 	return 0;
 
 }
